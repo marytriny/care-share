@@ -1,23 +1,23 @@
-import logo from './logo.svg';
+import { BrowserRouter, Route, Routes, Navigate  } from 'react-router-dom';
+
 import './App.css';
+import Dash from './components/Dash';
+import SignIn from './components/SignIn';
+import SignUp from './components/SignUp';
+import { APP_ROUTE } from './utils/constants';
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>CareShare</h1>
+      <BrowserRouter>
+        <Routes>
+          <Route exact path="/" element={<Navigate to={APP_ROUTE.DASH} />} />
+          <Route path={APP_ROUTE.SIGN_UP} element={<SignUp />} />
+          <Route path={APP_ROUTE.SIGN_IN} element={<SignIn />} />
+          <Route path={APP_ROUTE.DASH} element={<Dash />} />
+        </Routes>
+      </BrowserRouter>
     </div>
   );
 }
