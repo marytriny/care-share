@@ -26,7 +26,6 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <div className="App">
-        <h1>CareShare</h1>
         <div className='navbar'>
           <div align='left'>
             <Button href={APP_ROUTE.HOME} color='new' variant='contained'> Home </Button>
@@ -39,8 +38,8 @@ function App() {
               : (<Button href={APP_ROUTE.SIGN_IN} color='reports' variant='contained'> Log In </Button>)
             }
           </div>
-
         </div>
+        <h1>CareShare</h1>
         <BrowserRouter>
           <Routes>
             <Route exact path="/" element={<Home/>} />

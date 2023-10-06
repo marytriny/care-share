@@ -1,12 +1,14 @@
 .App {
+  background-color: #DCEDF9;
   text-align: center;
-  padding: 10px;
+  height: 100vh;
+  overflow: auto; /* fills screen */
 }
 
 .navbar {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 10px;
+  margin: 10px;
 }
 
 .sign-up {
