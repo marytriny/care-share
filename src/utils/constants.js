@@ -10,4 +10,5 @@ export const APP_ROUTE = {
   SIGN_UP: '/signup',
   SIGN_IN: '/signin',
   DASH: '/dash',
+  HOME: '/',
 }

@@ -1,24 +1,27 @@
 import React from 'react';
 import axios from 'axios';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Paper, TextField, Button, Typography } from '@mui/material';
 
 import { API_ROUTE, APP_ROUTE } from '../utils/constants';
-// import { useUser } from '../lib/customHooks';
-// import { storeTokenInLocalStorage } from '../lib/common';
+import { useUser } from '../utils/customHooks';
+import { storeTokenInLocalStorage } from '../utils/common';
 
 const SignIn = () => {
-
-  const navigate = useNavigate();
-//   const { user, authenticated } = useUser();
-//   if (user || authenticated) {
-//     navigate(APP_ROUTE.DASH)
-//   }
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+  const { user, authenticated } = useUser();
+  
+  useEffect(() => {
+    console.log(user, authenticated)
+    if (user || authenticated) {
+      navigate(APP_ROUTE.DASH)
+    }
+  }, [user, authenticated]);
 
   const signIn = async () => {
     try {
@@ -29,9 +32,9 @@ const SignIn = () => {
         console.log('Something went wrong during signing in: ', rsp);
         return;
       }
-      // storeTokenInLocalStorage(rsp.data.token);
-      // navigate(APP_ROUTE.DASH)
       console.log(rsp.data)
+      storeTokenInLocalStorage(rsp.data.token);
+      navigate(APP_ROUTE.DASH)
     }
     catch (err) {
       console.log('Some error occured during signing in: ', err);
@@ -40,7 +43,6 @@ const SignIn = () => {
       setIsLoading(false);
     }
   };
-
 
   return (
     // SIGN IN FORM TEMPLATE

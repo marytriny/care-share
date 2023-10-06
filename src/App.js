@@ -1,24 +1,56 @@
+// Import packages
 import { BrowserRouter, Route, Routes, Navigate  } from 'react-router-dom';
+import { ThemeProvider } from '@mui/material/styles';
+import { Button, ButtonGroup } from '@mui/material';
 
+// Local imports
 import './App.css';
+import { APP_ROUTE } from './utils/constants';
+import { theme } from './utils/theme';
+import { useUser } from './utils/customHooks';
+import { storeTokenInLocalStorage } from './utils/common';
+
+import Home from './components/Home';
 import Dash from './components/Dash';
 import SignIn from './components/SignIn';
 import SignUp from './components/SignUp';
-import { APP_ROUTE } from './utils/constants';
 
 function App() {
+
+  const { authenticated } = useUser();
+
+  const signOut = () => {
+    storeTokenInLocalStorage('');
+  }
+
   return (
-    <div className="App">
-      <h1>CareShare</h1>
-      <BrowserRouter>
-        <Routes>
-          <Route exact path="/" element={<Navigate to={APP_ROUTE.DASH} />} />
-          <Route path={APP_ROUTE.SIGN_UP} element={<SignUp />} />
-          <Route path={APP_ROUTE.SIGN_IN} element={<SignIn />} />
-          <Route path={APP_ROUTE.DASH} element={<Dash />} />
-        </Routes>
-      </BrowserRouter>
-    </div>
+    <ThemeProvider theme={theme}>
+      <div className="App">
+        <h1>CareShare</h1>
+        <div className='navbar'>
+          <div align='left'>
+            <Button href={APP_ROUTE.HOME} color='new' variant='contained'> Home </Button>
+            <Button href={APP_ROUTE.DASH} color='edit' variant='contained'> Dashboard </Button>
+          </div>
+          <div align='right'>
+            <Button href={APP_ROUTE.SIGN_UP} color='search' variant='contained'> Sign Up </Button>
+            { authenticated 
+              ? (<Button href={APP_ROUTE.HOME} onClick={signOut} color='reports' variant='contained'> Log Out </Button>)
+              : (<Button href={APP_ROUTE.SIGN_IN} color='reports' variant='contained'> Log In </Button>)
+            }
+          </div>
+
+        </div>
+        <BrowserRouter>
+          <Routes>
+            <Route exact path="/" element={<Home/>} />
+            <Route path={APP_ROUTE.SIGN_UP} element={<SignUp/>} />
+            <Route path={APP_ROUTE.SIGN_IN} element={<SignIn/>} />
+            <Route path={APP_ROUTE.DASH} element={<Dash/>} />
+          </Routes>
+        </BrowserRouter>
+      </div>
+    </ThemeProvider>
   );
 }
 

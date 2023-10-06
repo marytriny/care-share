@@ -1,14 +1,17 @@
 .App {
   text-align: center;
+  padding: 10px;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
 }
 
 .sign-up {
-  display: grid;
-  gap: 10px;
-  justify-content: center;
-  align-content: center;
-  text-align: center;
+  text-align: left;
   margin: auto;
   padding: 20px;
-  width: 50%;
+  width: 70%;
 }
