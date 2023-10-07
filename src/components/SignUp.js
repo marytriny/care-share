@@ -1,11 +1,15 @@
+// Import packages
 import React from 'react';
 import axios from 'axios';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Paper, Typography, Stack, TextField, Button, ToggleButtonGroup, ToggleButton  } from '@mui/material';
+import { toast } from 'react-toastify';
 import { IMaskMixin } from 'react-imask';
+import { Paper, Typography, Stack, TextField, Button, ToggleButtonGroup, ToggleButton, Autocomplete } from '@mui/material';
 
+// Local imports
 import { API_ROUTE, APP_ROUTE } from '../utils/constants';
+import states from '../utils/states.json'
 
 const IMaskPhoneInput = IMaskMixin(({ ...props }) => {
   return <TextField {...props} />;
@@ -29,17 +33,9 @@ const SignUp = () => {
     active: 1
   })
 
-  const updateAccount = (e) => {
+  const onInputChange = (e) => {
     const { name, value } = e.target;
-    setAccount(prevState => ({
-      ...prevState,
-      [name]: value.trim()
-    }))
-    // if number do:
-    // setAccount(prevState => ({
-    //   ...prevState,
-    //   [name]: parseInt(value)
-    // }))
+    setAccount(prevState => ({ ...prevState, [name]: value.trim() }))
   }
   
   function isEmailValid(email) {
@@ -52,14 +48,19 @@ const SignUp = () => {
     if(phone) return phone.length === 14;
     else return true;
   }
-  
+    
+  function isZipValid(zip) {
+    if(zip) return zip.length > 4;
+    else return true;
+  }
+
   const validateForm = () => {
     console.log(account);
-    if (!account.role || !account.email || !account.password ||
-        !account.organization || !account.address || !account.city || 
-        !account.state || !account.zip_code || !account.phone || 
-        !account.poc_name || !account.poc_phone) {
-      console.log("Please fill each field.")
+    if (!account.role || !account.email || !isEmailValid(account.email) || !account.password ||
+        !account.organization || !account.address || !account.city || !account.state || 
+        !account.zip_code || !isZipValid(account.zip_code) || !account.phone || !isPhoneValid(account.phone) ||
+        !account.poc_name || !account.poc_phone || !isPhoneValid(account.poc_phone)) {
+      toast.error("Please fill each field")
     }
   }
 
@@ -108,7 +109,7 @@ const SignUp = () => {
           name="organization" 
           variant="outlined"
           required
-          onChange={updateAccount}
+          onChange={onInputChange}
         />
         <TextField 
           label="Email" 
@@ -116,7 +117,7 @@ const SignUp = () => {
           variant="outlined" 
           required
           helperText='This will also serve as the account username'
-          onChange={updateAccount}
+          onChange={onInputChange}
           error={!isEmailValid(account.email)}
         />
         <IMaskPhoneInput 
@@ -125,7 +126,7 @@ const SignUp = () => {
           mask='(000) 000-0000'
           variant="outlined" 
           required
-          onChange={updateAccount}
+          onChange={onInputChange}
           error={!isPhoneValid(account.phone)}
         />
         <TextField 
@@ -133,41 +134,43 @@ const SignUp = () => {
           name="address" 
           variant="outlined" 
           required
-          onChange={updateAccount}
+          onChange={onInputChange}
         />
-        <div style={{ display:'flex', justifyContent:'space-between'}}>
+        <div style={{ display:'flex' }}>
           <TextField 
             label="City" 
             name="city" 
-            variant="outlined" 
             required
-            onChange={updateAccount}
+            fullWidth
+            onChange={onInputChange}
           />
-          <TextField 
-            label="State" 
-            name="state" 
-            variant="outlined" 
-            required
-            onChange={updateAccount}
-            sx={{minWidth: '80px'}}
+          <Autocomplete
+            options={states}
+            onChange={(e,v) => setAccount(prevState => ({...prevState, state: v }))}
+            renderInput={(params) => <TextField {...params} label="State*" />}
           />
-          <TextField 
+          <TextField
             label="Zip Code" 
-            name="zip_code" 
-            variant="outlined" 
+            name="zip_code"
             required
-            onChange={updateAccount}
-            sx={{minWidth: '200px'}}
-          />          
+            onChange={onInputChange}
+            error={!isZipValid(account.zip_code)}
+            inputProps={{ maxLength: 10 }}
+          />
         </div>
-        <Typography variant='h6' color='primary'> Person of Contact </Typography>
-        <Typography variant='body2'> Please identify a person of contact. </Typography>
+        <div>
+          <Typography variant='h6' color='primary'> Person of Contact </Typography>
+          <Typography variant='body2'> 
+            Please identify a person of contact for orders. This can be updated at
+            any time, and there will be an opportunity to provide a different contact in every order.
+          </Typography>
+        </div>
         <TextField 
           label="Name" 
           name="poc_name" 
           variant="outlined" 
           required
-          onChange={updateAccount}
+          onChange={onInputChange}
         />
         <IMaskPhoneInput 
           label="Phone" 
@@ -176,7 +179,7 @@ const SignUp = () => {
           variant="outlined" 
           required
           error={!isPhoneValid(account.poc_phone)}
-          onChange={updateAccount}
+          onChange={onInputChange}
         />
         <Typography variant='h6' color='primary'> Finish Sign Up </Typography>
         <TextField 
@@ -185,9 +188,9 @@ const SignUp = () => {
           type="password"
           variant="outlined"
           required
-          onChange={updateAccount}
+          onChange={onInputChange}
         />
-        <Button onClick={signUp}> sign up! </Button> 
+        <Button onClick={signUp} size="large"> sign up! </Button> 
       </Stack>
     </Paper>
   );

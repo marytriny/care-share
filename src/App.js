@@ -1,10 +1,12 @@
 // Import packages
 import { BrowserRouter, Route, Routes, Navigate  } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
 import { ThemeProvider } from '@mui/material/styles';
-import { Button, ButtonGroup } from '@mui/material';
+import Button from '@mui/material/Button';
 
 // Local imports
 import './App.css';
+import 'react-toastify/dist/ReactToastify.css';
 import { APP_ROUTE } from './utils/constants';
 import { theme } from './utils/theme';
 import { useUser } from './utils/customHooks';
@@ -48,6 +50,18 @@ function App() {
             <Route path={APP_ROUTE.DASH} element={<Dash/>} />
           </Routes>
         </BrowserRouter>
+
+        <ToastContainer
+          position="bottom-left"
+          autoClose={5000}
+          hideProgressBar
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          theme="colored"
+        />
       </div>
     </ThemeProvider>
   );
