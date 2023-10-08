@@ -11,17 +11,16 @@ import 'react-toastify/dist/ReactToastify.css';
 import { APP_ROUTE } from './utils/constants';
 import { theme } from './utils/theme';
 import { useUser } from './utils/customHooks';
-import { storeTokenInLocalStorage } from './utils/common';
 
 import Home from './components/Home';
 import Dash from './components/Dash';
 import SignIn from './components/SignIn';
 import SignUp from './components/SignUp';
+import Account from './components/Account';
 
 function App() {
 
   const { authenticated } = useUser();
-  const signOut = () => storeTokenInLocalStorage('');
  
   // useEffect(() => {
   //   console.log('here')
@@ -37,10 +36,7 @@ function App() {
             { authenticated && <Button href={APP_ROUTE.DASH} color='edit' variant='contained'> Dashboard </Button>}
           </div>
           <div align='right'>
-            { authenticated 
-              ? (<Button href={APP_ROUTE.HOME} onClick={signOut} color='reports' variant='contained'> Log Out </Button>)
-              : (<Button href={APP_ROUTE.SIGN_IN} color='reports' variant='contained'> Log In </Button>)
-            }
+            <Account/>
           </div>
         </div>
         <h1>CareShare</h1>
