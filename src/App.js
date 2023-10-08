@@ -8,47 +8,47 @@ import Button from '@mui/material/Button';
 // Local imports
 import './App.css';
 import 'react-toastify/dist/ReactToastify.css';
-import { APP_ROUTE } from './utils/constants';
 import { theme } from './utils/theme';
+import { APP_ROUTE } from './utils/constants';
 import { useUser } from './utils/customHooks';
-
-import Home from './components/Home';
-import Dash from './components/Dash';
-import SignIn from './components/SignIn';
-import SignUp from './components/SignUp';
-import Account from './components/Account';
+import AccountButton from './components/AccountButton';
+import Home from './pages/Home';
+import Dash from './pages/Dash';
+import SignIn from './pages/SignIn';
+import Account from './pages/Account';
+import SignUp from './pages/SignUp';
 
 function App() {
 
   const { authenticated } = useUser();
- 
-  // useEffect(() => {
-  //   console.log('here')
-  //   console.log(authenticated)
-  // }, [authenticated]);
 
   return (
     <ThemeProvider theme={theme}>
       <div className="App">
+        {/* Navigation bar */}
         <div className='navbar'>
           <div align='left'>
             <Button href={APP_ROUTE.HOME} color='new' variant='contained' sx={{mr: '5px'}}> Home </Button>
             { authenticated && <Button href={APP_ROUTE.DASH} color='edit' variant='contained'> Dashboard </Button>}
           </div>
           <div align='right'>
-            <Account/>
+            <AccountButton/>
           </div>
         </div>
         <h1>CareShare</h1>
+
+        {/* App Routing */}
         <BrowserRouter>
           <Routes>
             <Route exact path="/" element={<Home/>} />
-            <Route path={APP_ROUTE.SIGN_UP} element={<SignUp/>} />
-            <Route path={APP_ROUTE.SIGN_IN} element={<SignIn/>} />
             <Route path={APP_ROUTE.DASH} element={<Dash/>} />
+            <Route path={APP_ROUTE.SIGN_IN} element={<SignIn/>} />
+            <Route path={APP_ROUTE.ACCOUNT} element={<Account/>} />
+            <Route path={APP_ROUTE.SIGN_UP} element={<SignUp/>} />
           </Routes>
         </BrowserRouter>
 
+        {/* Popup Notifications Stying */}
         <ToastContainer
           position="bottom-left"
           autoClose={5000}

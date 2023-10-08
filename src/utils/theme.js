@@ -11,20 +11,13 @@ export const theme = createTheme({
     //   main: '#e7edf5',
     // },
     new: {
-      main: '#AED6F1',
-      bg: '#DCEDF9'
+      main: '#AED6F1'
     },
     edit: {
-      main: '#D7BDE2',
-      bg: '#E3DAF0'
+      main: '#D7BDE2'
     },
-    search: {
-      main: '#ABEBC6',
-      bg: '#D5F5E3'
-    },
-    reports: {
-      main: '#F9E79F',
-      bg: '#FCF3CF'
+    gray: {
+      main: '#CECECE'
     },
     subtext: {
       main: '#636b70'

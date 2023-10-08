@@ -32,21 +32,21 @@ const Account = () => {
         onClose={() => setAnchorEl(null)}
       >
         { authenticated ? (
-          <>
+          <span>
             <ListItem>
               <ListItemText align='center' primary={user.organization} />
             </ListItem>
             <ListItem>
-              <Button size="small"> Account </Button>
+              <Button href={APP_ROUTE.ACCOUNT} size="small"> Account </Button>
             </ListItem>
             <ListItem>
               <Button href={APP_ROUTE.HOME} onClick={signOut} size="small"> Sign Out </Button>
             </ListItem>
-          </>
+          </span>
         ) : (
-          <>
+          <span>
             <Button href={APP_ROUTE.SIGN_IN}> Sign In </Button>
-          </>
+          </span>
         )}
       </Menu>
     </div>
