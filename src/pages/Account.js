@@ -1,6 +1,6 @@
 // Import packages
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
@@ -12,7 +12,7 @@ import { useUser } from '../utils/customHooks';
 const Account = () => {
 
   const [account, setAccount] = useState(DEFAULT_ACCOUNT);
-  const { user, authenticated } = useUser();
+  const { user } = useUser();
   
   useEffect(() => {
     // Get account details
@@ -36,7 +36,6 @@ const Account = () => {
 
   // Submit request to update account details
   const update = () => {
-    console.log(account);
     axios.post(API_ROUTE.UPDATE_USER, account)
       .then((rsp) => {
         toast.success("Account updated!");
@@ -47,6 +46,19 @@ const Account = () => {
       });
   };
 
+  const updatePassword = () => {
+    console.log(account)
+    axios.post(API_ROUTE.UPDATE_PASSWORD, account)
+      .then((rsp) => {
+        toast.success("Password updated!");
+      })
+      .catch ((err) => {
+        if(err.response?.data.msg === "Invalid Email Or Password") toast.error("Current Password is Incorrect");
+        else toast.error("Service Error - Please try again later.")
+        console.log('Error occured during update: ', err);
+      });
+  }
+
   return (
     <AccountForm 
       account={account}
@@ -54,6 +66,7 @@ const Account = () => {
       submitText={'Save Updates'}
       onSubmit={update}
       update
+      updatePassword={updatePassword}
     />
   );
 }

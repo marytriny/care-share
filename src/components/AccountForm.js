@@ -2,7 +2,8 @@
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 import { IMaskMixin } from 'react-imask';
-import { Paper, Typography, Stack, TextField, Button, ToggleButtonGroup, ToggleButton, Autocomplete } from '@mui/material';
+import { Paper, Typography, Stack, TextField, Button, ToggleButtonGroup, 
+  ToggleButton, Autocomplete, Dialog, DialogContent, DialogTitle, DialogActions } from '@mui/material';
 
 // Local imports
 import states from '../utils/states.json'
@@ -11,7 +12,9 @@ const IMaskPhoneInput = IMaskMixin(({ ...props }) => {
   return <TextField {...props} />;
 });
 
-const AccountFrom = ({ account, setAccount, submitText, onSubmit, update }) => {
+const AccountFrom = ({ account, setAccount, submitText, onSubmit, update, updatePassword }) => {
+
+  const [changePwdDialog, setChangePwdDialog] = useState(false)
 
   function isEmailValid(email) {
     const EMAIL_REGEX = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
@@ -44,6 +47,11 @@ const AccountFrom = ({ account, setAccount, submitText, onSubmit, update }) => {
   const onInputChange = (e) => {
     const { name, value } = e.target;
     setAccount(prevState => ({ ...prevState, [name]: value }))
+  }
+
+  const handlePasswordChange = () => {
+    updatePassword()
+    setChangePwdDialog(false)
   }
 
   return (
@@ -165,7 +173,9 @@ const AccountFrom = ({ account, setAccount, submitText, onSubmit, update }) => {
         <div>
           <Typography variant='h6' color='primary'> Account Password </Typography>
           { update ? (
-            <Button color='gray' variant='contained'> Update Password </Button>
+            <Button color='gray' variant='contained' onClick={() => setChangePwdDialog(true)}> 
+              Update Password 
+            </Button>
           ) : (
             <TextField 
               label="Account Password" 
@@ -179,6 +189,33 @@ const AccountFrom = ({ account, setAccount, submitText, onSubmit, update }) => {
         </div>     
         <Button onClick={validateForm} size="large" variant='contained'> { submitText } </Button> 
       </Stack>
+
+      {/* Dialog to change password when updating account details */}
+      <Dialog open={changePwdDialog} onClose={() => setChangePwdDialog(false)}>
+        <DialogTitle> Change Password </DialogTitle>
+        <DialogContent>
+          <Stack spacing={2} sx={{ mt: '5px' }}>
+            <TextField
+              label="Current Password" 
+              name="current_password" 
+              type="password"
+              variant="outlined"
+              onChange={onInputChange}
+            />
+            <TextField
+              label="New Password" 
+              name="password" 
+              type="password"
+              variant="outlined"
+              onChange={onInputChange}
+            />
+          </Stack>
+        </DialogContent>
+        <DialogActions>
+          <Button variant='outlined' onClick={() => setChangePwdDialog(false)}> Cancel </Button>
+          <Button variant='contained' onClick={handlePasswordChange}> Update </Button>
+        </DialogActions>
+      </Dialog>
     </Paper>
   );
 }

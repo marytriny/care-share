@@ -5,6 +5,7 @@ export const API_ROUTE = {
   SIGN_IN: `${API_URL}/account/signin`,
   GET_USER: `${API_URL}/account/me`,
   UPDATE_USER: `${API_URL}/account/update`,
+  UPDATE_PASSWORD: `${API_URL}/account/updatePassword`,
 }
 
 export const APP_ROUTE = {

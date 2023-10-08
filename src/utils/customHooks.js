@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { getAuthenticatedUser } from './common';
 
 export function useUser() {

@@ -21,6 +21,7 @@ const SignIn = () => {
     if (user || authenticated) {
       navigate(APP_ROUTE.DASH)
     }
+    // eslint-disable-next-line
   }, [user, authenticated]);
 
   // Handle key press for the Enter key
