@@ -17,6 +17,7 @@ export function useUser() {
         // navigate(APP_ROUTE.SIGN_IN);
         return;
       }
+      // console.log("setting auth to: ", authenticated)
       setUser(user);
       setAuthenticated(authenticated);
     }

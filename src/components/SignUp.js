@@ -1,8 +1,7 @@
 // Import packages
-import React from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { IMaskMixin } from 'react-imask';
 import { Paper, Typography, Stack, TextField, Button, ToggleButtonGroup, ToggleButton, Autocomplete } from '@mui/material';
@@ -17,7 +16,6 @@ const IMaskPhoneInput = IMaskMixin(({ ...props }) => {
 
 const SignUp = () => {
   // const navigate = useNavigate()
-  const [isLoading, setIsLoading] = useState(false);
   const [account, setAccount] = useState({
     role: 'DONOR',
     email: '',
@@ -43,47 +41,37 @@ const SignUp = () => {
     if(email) return EMAIL_REGEX.test(email);
     else return true;
   }
-  
   function isPhoneValid(phone) {
     if(phone) return phone.length === 14;
     else return true;
   }
-    
   function isZipValid(zip) {
     if(zip) return zip.length > 4;
     else return true;
   }
 
+  // Validate all required fields are populated correctly
   const validateForm = () => {
-    console.log(account);
     if (!account.role || !account.email || !isEmailValid(account.email) || !account.password ||
         !account.organization || !account.address || !account.city || !account.state || 
         !account.zip_code || !isZipValid(account.zip_code) || !account.phone || !isPhoneValid(account.phone) ||
         !account.poc_name || !account.poc_phone || !isPhoneValid(account.poc_phone)) {
-      toast.error("Please fill each field")
+      toast.error("Please fill each field");
     }
   }
 
-  // With password authentication
-  const signUp = async () => {
+  // Submit request to create an account
+  const signUp = () => {
     validateForm();
-
-    // try {
-    //   setIsLoading(true);
-    //   const rsp = await axios.post(API_ROUTE.SIGN_UP, account);
-    //   console.log(rsp.data)
-    //   if (!rsp?.data?.token) {
-    //     console.log('Something went wrong during signing up: ', rsp);
-    //     return;
-    //   }
-    //   // navigate(APP_ROUTE.SIGN_IN);
-    // }
-    // catch (err) {
-    //   console.log('Some error occured during signing up: ', err);
-    // }
-    // finally {
-    //   setIsLoading(false);
-    // }
+    axios.post(API_ROUTE.SIGN_UP, account)
+      .then((rsp) => {
+        // navigate(APP_ROUTE.SIGN_IN);
+        toast.success("Account created!")
+      })
+      .catch ((err) => {
+        toast.error("An error occured during sign up. Try again later.");
+        console.log('Error occured during sign up: ', err);
+      });
   };
 
   return (
@@ -110,6 +98,7 @@ const SignUp = () => {
           variant="outlined"
           required
           onChange={onInputChange}
+          inputProps={{ maxLength: 64 }}
         />
         <TextField 
           label="Email" 
@@ -119,6 +108,7 @@ const SignUp = () => {
           helperText='This will also serve as the account username'
           onChange={onInputChange}
           error={!isEmailValid(account.email)}
+          inputProps={{ maxLength: 255 }}
         />
         <IMaskPhoneInput 
           label="Phone" 
@@ -135,6 +125,7 @@ const SignUp = () => {
           variant="outlined" 
           required
           onChange={onInputChange}
+          inputProps={{ maxLength: 255 }}
         />
         <div style={{ display:'flex' }}>
           <TextField 
@@ -143,6 +134,7 @@ const SignUp = () => {
             required
             fullWidth
             onChange={onInputChange}
+            inputProps={{ maxLength: 32 }}
           />
           <Autocomplete
             options={states}
@@ -150,7 +142,7 @@ const SignUp = () => {
             renderInput={(params) => <TextField {...params} label="State*" />}
           />
           <TextField
-            label="Zip Code" 
+            label="Zip Code"
             name="zip_code"
             required
             onChange={onInputChange}
@@ -171,6 +163,7 @@ const SignUp = () => {
           variant="outlined" 
           required
           onChange={onInputChange}
+          inputProps={{ maxLength: 64 }}
         />
         <IMaskPhoneInput 
           label="Phone" 

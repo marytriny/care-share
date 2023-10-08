@@ -11,6 +11,6 @@ export default function Dash({token}) {
   
   console.log(user);
   return(
-    <h2>Dash - Welcome {user.organization}! </h2>
+    <h2> Welcome {user.organization}! </h2>
   );
 }

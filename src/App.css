@@ -3,17 +3,24 @@
   text-align: center;
   height: 100vh;
   overflow: auto; /* fills screen */
+  padding: 10px;
 }
 
 .navbar {
   display: flex;
   justify-content: space-between;
-  margin: 10px;
 }
 
+.home {
+  border-style: double;
+  padding: 10px;
+  max-width: 600px;
+  margin: auto;
+}
 .sign-up {
   text-align: left;
   margin: auto;
+  margin-bottom: 20px;
   padding: 20px;
   width: 70%;
 }

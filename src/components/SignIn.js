@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Paper, TextField, Button, Typography } from '@mui/material';
+import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
+import { Paper, Stack, TextField, Button, Typography } from '@mui/material';
 
 import { API_ROUTE, APP_ROUTE } from '../utils/constants';
 import { useUser } from '../utils/customHooks';
@@ -12,10 +12,10 @@ const SignIn = () => {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
   const { user, authenticated } = useUser();
-  
+  const navigate = useNavigate();
+
+  // Check if the user is already authenticated
   useEffect(() => {
     console.log(user, authenticated)
     if (user || authenticated) {
@@ -23,45 +23,46 @@ const SignIn = () => {
     }
   }, [user, authenticated]);
 
-  const signIn = async () => {
-    try {
-      setIsLoading(true);
-      console.log(email, password)
-      const rsp = await axios.post(API_ROUTE.SIGN_IN, { email, password });
-      if (!rsp?.data?.token) {
-        console.log('Something went wrong during signing in: ', rsp);
-        return;
-      }
-      console.log(rsp.data)
-      storeTokenInLocalStorage(rsp.data.token);
-      navigate(APP_ROUTE.DASH)
-    }
-    catch (err) {
-      console.log('Some error occured during signing in: ', err);
-    }
-    finally {
-      setIsLoading(false);
-    }
-  };
+  // Handle key press for the Enter key
+  const handleKeypress = (e) => { 
+    if(e.key === "Enter") signIn();
+  }
+
+  // Submit sign in request
+  const signIn = () => {
+    axios.post(API_ROUTE.SIGN_IN, { email, password })
+      .then((rsp) => {
+        storeTokenInLocalStorage(rsp.data.token);
+        navigate(APP_ROUTE.DASH)
+      })
+      .catch ((err) => {
+        if(err.response.data.msg === "Invalid Email Or Password") toast.error("Invalid Email or Password");
+        else toast.error("Service Error - Please try again later.")
+        console.log('Error occured during sign in: ', err);
+      })
+  }
 
   return (
-    // SIGN IN FORM TEMPLATE
-    <Paper className='sign-up' sx={{ bgcolor: 'pink' }}>
-      <Typography variant='h4'> Sign In </Typography>
-      <TextField 
-        label="Email" 
-        name="email" 
-        variant="outlined" 
-        onChange={(e) => setEmail(e.target.value)}
-      />
-      <TextField 
-        label="Password" 
-        name="password" 
-        type="password"
-        variant="outlined"
-        onChange={(e) => setPassword(e.target.value)}
-      />
-      <Button onClick={signIn}> sign in </Button>
+    // SIGN IN FORM
+    <Paper className='sign-up' sx={{ maxWidth: '400px' }}>
+      <Stack spacing={2}>
+        <Typography variant='h4' align='center' color='primary'> Sign In </Typography>
+        <TextField 
+          label="Email" 
+          name="email" 
+          variant="outlined" 
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <TextField 
+          label="Password" 
+          name="password" 
+          type="password"
+          variant="outlined"
+          onChange={(e) => setPassword(e.target.value)}
+          onKeyUp={handleKeypress}
+        />
+        <Button onClick={signIn} size='large'> sign in </Button>
+      </Stack>
     </Paper>
   );
 }

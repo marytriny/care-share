@@ -1,5 +1,6 @@
 // Import packages
-import { BrowserRouter, Route, Routes, Navigate  } from 'react-router-dom';
+import React, {useEffect} from 'react';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import { ThemeProvider } from '@mui/material/styles';
 import Button from '@mui/material/Button';
@@ -20,21 +21,22 @@ import SignUp from './components/SignUp';
 function App() {
 
   const { authenticated } = useUser();
-
-  const signOut = () => {
-    storeTokenInLocalStorage('');
-  }
+  const signOut = () => storeTokenInLocalStorage('');
+ 
+  // useEffect(() => {
+  //   console.log('here')
+  //   console.log(authenticated)
+  // }, [authenticated]);
 
   return (
     <ThemeProvider theme={theme}>
       <div className="App">
         <div className='navbar'>
           <div align='left'>
-            <Button href={APP_ROUTE.HOME} color='new' variant='contained'> Home </Button>
-            <Button href={APP_ROUTE.DASH} color='edit' variant='contained'> Dashboard </Button>
+            <Button href={APP_ROUTE.HOME} color='new' variant='contained' sx={{mr: '5px'}}> Home </Button>
+            { authenticated && <Button href={APP_ROUTE.DASH} color='edit' variant='contained'> Dashboard </Button>}
           </div>
           <div align='right'>
-            <Button href={APP_ROUTE.SIGN_UP} color='search' variant='contained'> Sign Up </Button>
             { authenticated 
               ? (<Button href={APP_ROUTE.HOME} onClick={signOut} color='reports' variant='contained'> Log Out </Button>)
               : (<Button href={APP_ROUTE.SIGN_IN} color='reports' variant='contained'> Log In </Button>)
