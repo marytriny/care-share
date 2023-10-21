@@ -1,11 +1,14 @@
 const API_URL = 'http://localhost:9000'
 
 export const API_ROUTE = {
+  // Account paths
   SIGN_UP: `${API_URL}/account/signup`,
   SIGN_IN: `${API_URL}/account/signin`,
   GET_USER: `${API_URL}/account/me`,
   UPDATE_USER: `${API_URL}/account/update`,
   UPDATE_PASSWORD: `${API_URL}/account/updatePassword`,
+  // Donation paths
+  DONATION: `${API_URL}/donation`,
 }
 
 export const APP_ROUTE = {
@@ -13,6 +16,7 @@ export const APP_ROUTE = {
   SIGN_IN: '/signin',
   ACCOUNT: '/account',
   DASH: '/dash',
+  DONATE: '/donate',
   HOME: '/',
 }
 

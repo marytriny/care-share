@@ -14,13 +14,14 @@ import { useUser } from './utils/customHooks';
 import AccountButton from './components/AccountButton';
 import Home from './pages/Home';
 import Dash from './pages/Dash';
+import Donate from './pages/Donate';
 import SignIn from './pages/SignIn';
 import Account from './pages/Account';
 import SignUp from './pages/SignUp';
 
 function App() {
 
-  const { authenticated } = useUser();
+  const { user, authenticated } = useUser();
 
   return (
     <ThemeProvider theme={theme}>
@@ -41,7 +42,8 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route exact path="/" element={<Home/>} />
-            <Route path={APP_ROUTE.DASH} element={<Dash/>} />
+            <Route path={APP_ROUTE.DASH} element={<Dash user={user} />} />
+            <Route path={APP_ROUTE.DONATE} element={<Donate user={user} />} />
             <Route path={APP_ROUTE.SIGN_IN} element={<SignIn/>} />
             <Route path={APP_ROUTE.ACCOUNT} element={<Account/>} />
             <Route path={APP_ROUTE.SIGN_UP} element={<SignUp/>} />
