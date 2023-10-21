@@ -14,6 +14,7 @@ import dayjs from 'dayjs';
 import moment from 'moment';
 
 // Local imports
+import { useUser } from '../utils/customHooks';
 import states from '../utils/states.json'
 import { API_ROUTE, APP_ROUTE } from '../utils/constants';
 
@@ -26,11 +27,12 @@ const DEFAULT_FROM_DATE = new Date();
 const DEFAULT_TO_DATE = new Date();
 DEFAULT_TO_DATE.setHours(DEFAULT_TO_DATE.getHours() + 4);
 
-export default function Donate({user}) {
+export default function Donate() {
 
   const [fromDate, setFromDate] = useState(dayjs(DEFAULT_FROM_DATE))
   const [toDate, setToDate] = useState(dayjs(DEFAULT_TO_DATE))
   const [donation, setDonation] = useState(null)
+  const { user, authenticated } = useUser();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -47,8 +49,8 @@ export default function Donate({user}) {
         poc_name: user.poc_name,
         poc_phone: user.poc_phone,
         notes: '',
-        from_date: moment(DEFAULT_FROM_DATE).format('YYYY-MM-DD HH:mm:ss'),
-        to_date: moment(DEFAULT_TO_DATE).format('YYYY-MM-DD HH:mm:ss'),
+        from_date: moment(DEFAULT_FROM_DATE).format('YYYY-MM-DD HH:mm'),
+        to_date: moment(DEFAULT_TO_DATE).format('YYYY-MM-DD HH:mm'),
       })
     }
   }, [user]);
@@ -59,7 +61,7 @@ export default function Donate({user}) {
 
   const onDateChange = (name, setter, value) => {
     setter(value);
-    updateDonation(name, moment(value?.$d).format('YYYY-MM-DD HH:mm:ss'));
+    updateDonation(name, moment(value?.$d).format('YYYY-MM-DD HH:mm'));
   }
 
   const submit = () => {
@@ -76,9 +78,7 @@ export default function Donate({user}) {
     });
   }
 
-  if (!donation) {
-    return <h2> Please login to make a donation. </h2>
-  }
+  if (!donation) return <h2> Please login to make a donation. </h2>
   else return(
     <Paper className='sign-up'>
       <Stack spacing={2}>
