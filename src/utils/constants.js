@@ -9,6 +9,10 @@ export const API_ROUTE = {
   UPDATE_PASSWORD: `${API_URL}/account/updatePassword`,
   // Donation paths
   DONATION: `${API_URL}/donation`,
+  DONOR_DONATIONS: `${API_URL}/donation/donor`,
+  ACCEPTED_DONATIONS: `${API_URL}/donation/accepted`,
+  ACCEPT_DONATION: `${API_URL}/donation/accept`,
+  DONATION_STATUS: `${API_URL}/donation/status`,
 }
 
 export const APP_ROUTE = {

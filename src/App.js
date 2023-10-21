@@ -4,6 +4,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import { ThemeProvider } from '@mui/material/styles';
 import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
 
 // Local imports
 import './App.css';
@@ -28,15 +29,15 @@ function App() {
       <div className="App">
         {/* Navigation bar */}
         <div className='navbar'>
-          <div align='left'>
-            <Button href={APP_ROUTE.HOME} color='new' variant='contained' sx={{mr: '5px'}}> Home </Button>
+          <div align='left' style={{display: 'flex', height: '40px' }}>
+            <Typography variant='h5' sx={{pt: '4px'}}> CareShare </Typography>
+            <Button href={APP_ROUTE.HOME} color='new' variant='contained' sx={{mx: '5px'}}> Home </Button>
             { authenticated && <Button href={APP_ROUTE.DASH} color='edit' variant='contained'> Dashboard </Button>}
           </div>
           <div align='right'>
             <AccountButton/>
           </div>
         </div>
-        <h1>CareShare</h1>
 
         {/* App Routing */}
         <BrowserRouter>
