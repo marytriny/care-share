@@ -3,12 +3,14 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { Paper, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, IconButton, CardActionArea, CardContent, CardMedia, Button } from '@mui/material';
+import { Paper, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, IconButton, 
+  CardActionArea, CardContent, CardMedia, Button } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import UndoIcon from '@mui/icons-material/Undo';
 import moment from 'moment';
 
 import { API_ROUTE, APP_ROUTE } from '../utils/constants';
+import OrgDetailsDialog from '../components/OrgDetailsDialog'
 
 const columns = [ 'item', 'quantity', 'from_date', 'to_date', 'distributor', 'status' ];
 
@@ -21,6 +23,9 @@ const cardMediaStyle={
 export default function DonorDash({user}) {
 
   const [rows, setRows] = useState([])
+  const [showMoreDialog, setShowMoreDialog] = useState(false)
+  const [selectedOrg, setSelectedOrg] = useState(null)
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -35,7 +40,7 @@ export default function DonorDash({user}) {
 
   const cancel = (id, cancel = false) => {
     const status = cancel ? 'CANCELLED' : 'PENDING'
-    axios.put(API_ROUTE.ACCEPT_DONATION, { id, status, distributor: '' })
+    axios.put(API_ROUTE.DONATION_STATUS, { id, status, distributor: '' })
       .then((rsp) => loadTable())
       .catch ((err) => {
         loadTable()
@@ -44,13 +49,28 @@ export default function DonorDash({user}) {
       })
   }
 
+  const showMore = (donation) => {
+    axios.post(API_ROUTE.ORG_DETAILS, { organization: donation.distributor })
+    .then((rsp) => {
+      const distributor = { ...rsp.data, 
+        address: rsp.data.address + ' ' + rsp.data.city + ' ' + rsp.data.state + ' ' + rsp.data.zip_code 
+      }
+      setSelectedOrg(distributor)
+      setShowMoreDialog(true)
+    })
+    .catch ((err) => {
+      toast.error('Error retrieving org info. Try again later.')
+      console.log('Error retrieving org info. ', err)
+    })
+  }
+
   const printRow = (column, obj) => {
     let rowData = '';
     if (column === 'from_date' || column === 'to_date') {
       rowData = moment(obj[column]).format('MM/DD hh:mm a');
     }
     else if (column === 'distributor') {
-      rowData = <Button size='small'> {obj[column]} </Button>
+      rowData = <Button onClick={() => showMore(obj)} size='small'> {obj[column]} </Button>
     }
     else rowData = obj[column];
 
@@ -109,6 +129,7 @@ export default function DonorDash({user}) {
           </CardContent>
         </CardActionArea>
       </div>
+      <OrgDetailsDialog org={selectedOrg} showMoreDialog={showMoreDialog} setShowMoreDialog={setShowMoreDialog} />
     </div>
   );
 }

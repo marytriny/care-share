@@ -4,22 +4,25 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { Paper, Typography, Table, TableBody, TableCell, TableContainer, TableHead, 
-  TableRow, IconButton, Dialog, DialogContent, DialogTitle } from '@mui/material';
+  TableRow, IconButton } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import moment from 'moment';
 
 import { API_ROUTE } from '../utils/constants';
+import OrgDetailsDialog from '../components/OrgDetailsDialog'
 
 const columns = [ 'item', 'quantity', 'from_date', 'to_date', 'donor', 'address' ];
 const isDate = (field_name) => (field_name === 'from_date' || field_name === 'to_date');
 
 export default function DonorDash({user}) {
 
+  // Table data for all available and accepted donations
   const [availableDonations, setAvailableDonations] = useState([])
   const [acceptedDonations, setAcceptedDonations] = useState([])
-  const [acceptedDialog, setAcceptedDialog] = useState(false)
+
+  const [showMoreDialog, setShowMoreDialog] = useState(false)
   const [selectedDonation, setSelectedDonation] = useState(null)
 
   useEffect(() => {
@@ -38,10 +41,13 @@ export default function DonorDash({user}) {
       .catch ((err) => console.log('Failed to get available donations table ', err));
   }
 
-  const donationRsp = (id, status) => {
+  const donationRsp = (data, status) => {
     const distributor = (status === 'PENDING') ? '' : user.organization
-    axios.put(API_ROUTE.ACCEPT_DONATION, { id, status, distributor: distributor })
-      .then((rsp) => loadTables())
+    axios.put(API_ROUTE.DONATION_STATUS, { id: data.id, status, distributor })
+      .then((rsp) => {
+        if (status === 'ACCEPTED') showMore(data);
+        loadTables()
+      })
       .catch ((err) => {
         loadTables()
         toast.error('Error accepting donation. Try again later.')
@@ -49,9 +55,22 @@ export default function DonorDash({user}) {
       })
   }
 
-  const seeMore = (donation) => {
-    setSelectedDonation(donation)
-    setAcceptedDialog(true)
+  const showMore = (donation) => {
+    axios.post(API_ROUTE.ORG_DETAILS, { organization: donation.donor })
+    .then((rsp) => {
+      donation = {...rsp.data, 
+        address: donation.address,
+        from_date: moment(donation.from_date).format('MM/DD hh:mm a'),
+        to_date: moment(donation.to_date).format('MM/DD hh:mm a'),
+        notes: donation.notes
+      }
+      setSelectedDonation(donation)
+      setShowMoreDialog(true)
+    })
+    .catch ((err) => {
+      toast.error('Error retrieving org info. Try again later.')
+      console.log('Error retrieving org info. ', err)
+    })
   }
 
   // Update column names so they are more human readable.
@@ -88,24 +107,24 @@ export default function DonorDash({user}) {
                 { accepted ? (
                   <>
                     <TableCell key='more'> 
-                      <IconButton onClick={() => seeMore(rowData)} color='primary' size='small' sx={{ p:0 }}> 
+                      <IconButton onClick={() => showMore(rowData)} color='primary' size='small' sx={{ p:0 }}> 
                         <MoreHorizIcon/> 
                       </IconButton> 
                     </TableCell>
                     <TableCell key='cancel'> 
-                      <IconButton onClick={() => donationRsp(rowData.id, 'PENDING')} color='error' size='small' sx={{ p:0 }}> 
+                      <IconButton onClick={() => donationRsp(rowData, 'PENDING')} color='error' size='small' sx={{ p:0 }}> 
                         <CloseIcon/> 
                       </IconButton> 
                     </TableCell>
                     <TableCell key='done'> 
-                      <IconButton onClick={() => donationRsp(rowData.id, 'COMPLETED')} color='success' size='small' sx={{ p:0 }}> 
+                      <IconButton onClick={() => donationRsp(rowData, 'COMPLETED')} color='success' size='small' sx={{ p:0 }}> 
                         <CheckIcon/>
                       </IconButton> 
                     </TableCell>
                   </>
                   ):(
                     <TableCell key='accept'> 
-                      <IconButton onClick={() => donationRsp(rowData.id, 'ACCEPTED')} color='success' size='small' sx={{ p:0 }}> 
+                      <IconButton onClick={() => donationRsp(rowData, 'ACCEPTED')} color='success' size='small' sx={{ p:0 }}> 
                         <CheckIcon/>
                       </IconButton> 
                     </TableCell>
@@ -135,26 +154,7 @@ export default function DonorDash({user}) {
       <Typography variant='h5' color='primary' align='left' sx={{mt: '40px'}}> Available Donations </Typography>
       <PrintTable rows={availableDonations} />
 
-      <Dialog open={acceptedDialog} onClose={() => setAcceptedDialog(false)}>
-        <DialogTitle> Donation Accepted </DialogTitle>
-        { selectedDonation && 
-          <DialogContent> 
-            This donation can be picked up anytime from <br/>
-            {moment(selectedDonation.from_date).format('MM/DD hh:mm a')} {' to '}
-            {moment(selectedDonation.to_date).format('MM/DD hh:mm a')}<br/>
-            from {selectedDonation.address} 
-            <br/><br/>
-            <b> Donation Contact: </b> <br/>
-            {selectedDonation.poc_name} {selectedDonation.poc_phone}
-            {selectedDonation.notes && 
-              <>
-                <b> Additional notes: </b> <br/>
-                {selectedDonation.notes}
-              </>
-            }
-          </DialogContent>
-        }
-      </Dialog>
+      <OrgDetailsDialog org={selectedDonation} showMoreDialog={showMoreDialog} setShowMoreDialog={setShowMoreDialog} />
     </div>
   );
 }
