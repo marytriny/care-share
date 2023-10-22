@@ -24,3 +24,8 @@
   padding: 20px;
   width: 70%;
 }
+
+/* Unset the all caps default text used on MUI buttons */
+.MuiButton-text{
+  text-transform: unset !important;
+}

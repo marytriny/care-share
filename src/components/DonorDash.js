@@ -3,14 +3,14 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { Paper, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Grid, CardActionArea, CardContent, CardMedia } from '@mui/material';
+import { Paper, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, IconButton, CardActionArea, CardContent, CardMedia, Button } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
+import UndoIcon from '@mui/icons-material/Undo';
 import moment from 'moment';
 
 import { API_ROUTE, APP_ROUTE } from '../utils/constants';
 
 const columns = [ 'item', 'quantity', 'from_date', 'to_date', 'distributor', 'status' ];
-
-const isDate = (field_name) => field_name === 'from_date' || field_name === 'to_date'
 
 const cardMediaStyle={
   height: '100px',
@@ -24,12 +24,38 @@ export default function DonorDash({user}) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if(user) {
-      axios.post(API_ROUTE.DONOR_DONATIONS, { donor: user.organization })
-        .then((rsp) => setRows(rsp.data))
-        .catch ((err) => console.log('Failed to get donation table ', err));
-    }
+    if(user) loadTable();
   }, [user]);
+
+  const loadTable = () => {
+    axios.post(API_ROUTE.DONOR_DONATIONS, { donor: user.organization })
+      .then((rsp) => setRows(rsp.data))
+      .catch ((err) => console.log('Failed to get donation table ', err));
+  }
+
+  const cancel = (id, cancel = false) => {
+    const status = cancel ? 'CANCELLED' : 'PENDING'
+    axios.put(API_ROUTE.ACCEPT_DONATION, { id, status, distributor: '' })
+      .then((rsp) => loadTable())
+      .catch ((err) => {
+        loadTable()
+        toast.error('Error cancelling donation. Try again later.')
+        console.log('Error cancelling donation. ', err)
+      })
+  }
+
+  const printRow = (column, obj) => {
+    let rowData = '';
+    if (column === 'from_date' || column === 'to_date') {
+      rowData = moment(obj[column]).format('MM/DD hh:mm a');
+    }
+    else if (column === 'distributor') {
+      rowData = <Button size='small'> {obj[column]} </Button>
+    }
+    else rowData = obj[column];
+
+    return <TableCell key={column}> { rowData } </TableCell>;
+  }
 
   // Update column names so they are more human readable.
   // ex. column name 'from_date' would become 'From Date'.
@@ -44,16 +70,25 @@ export default function DonorDash({user}) {
           <TableHead>
             <TableRow>
               {columns.map(x => <TableCell key={x}> {formatHeader(x)} </TableCell>)}
+              <TableCell key='cancel'> Cancel </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {rows.length > 0 ? rows.map((rowData) => (
-              <TableRow key={rowData.id} hover onClick={() => navigate(`/edit/${rowData.id}`)}>
-                {columns.map(x => 
-                  <TableCell key={x}> 
-                    { isDate(x) ? moment(rowData[x]).format('MM/DD/YY hh:mm a') : rowData[x] } 
-                  </TableCell>
-                )}
+              <TableRow key={rowData.id} hover>
+                {columns.map( x => printRow(x, rowData) )}
+                <TableCell key='cancel'> 
+                  { rowData.status === 'PENDING' &&
+                    <IconButton onClick={() => cancel(rowData.id, true)} size='small' color='error' sx={{ p:0 }}> 
+                      <CloseIcon/> 
+                    </IconButton>
+                  }
+                  { rowData.status === 'CANCELLED' &&
+                    <IconButton onClick={() => cancel(rowData.id)} size='small' color='primary' sx={{ p:0 }}> 
+                      <UndoIcon/> 
+                    </IconButton>
+                  }
+                </TableCell>
               </TableRow>
             )) : (<TableRow><TableCell>No donations yet</TableCell></TableRow>)}
           </TableBody>
@@ -64,7 +99,7 @@ export default function DonorDash({user}) {
 
   return(
     <div>
-      <Typography variant='h5' color='primary' align='left'> Donations </Typography>
+      <Typography variant='h5' color='primary' align='left' sx={{mt: '40px'}}> Donations </Typography>
       <div style={{ display: 'flex' }}>
         <PrintTable/>
         <CardActionArea onClick={() => navigate(APP_ROUTE.DONATE)} sx={{ minHeight: 120, width: '200px' }}>
