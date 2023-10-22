@@ -1,11 +1,10 @@
 // Import packages
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
 import axios from 'axios';
-import { toast } from 'react-toastify';
-import { Paper, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 
 // Local imports
+import { API_ROUTE } from '../utils/constants';
 import { useUser } from '../utils/customHooks';
 import DonorDash from '../components/DonorDash';
 import DistributorDash from '../components/DistributorDash'
@@ -13,6 +12,11 @@ import DistributorDash from '../components/DistributorDash'
 export default function Dash() {
 
   const { user, authenticated } = useUser();
+
+  useEffect(() => {
+    axios.put(API_ROUTE.UPDATE_EXPIRED)
+      .catch ((err) => console.log('Failed to update expired donations ', err));
+  }, []);
 
   if (!user || !authenticated) return <h2> Please login to access dashboard. </h2>
   else return(

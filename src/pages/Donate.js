@@ -32,12 +32,12 @@ export default function Donate() {
   const [fromDate, setFromDate] = useState(dayjs(DEFAULT_FROM_DATE))
   const [toDate, setToDate] = useState(dayjs(DEFAULT_TO_DATE))
   const [donation, setDonation] = useState(null)
-  const { user, authenticated } = useUser();
+
+  const { user } = useUser();
   const navigate = useNavigate();
 
   useEffect(() => {
     if(user) {
-      console.log(user);
       setDonation({
         item: '',
         quantity: 1,
@@ -65,17 +65,23 @@ export default function Donate() {
   }
 
   const submit = () => {
-    console.log(donation)
+    // Validate all required fields were entered correctly
+    if (!donation.item || !(Number(donation.quantity) > 0) || !donation.address || 
+        !donation.city || !donation.state || !(donation.zip_code.length > 4) || !donation.poc_name || 
+        !(donation.poc_phone.length === 14) || !donation.from_date || !donation.to_date ) {
+      toast.error("Please fill each field");
+      return;
+    }
+
     axios.post(API_ROUTE.DONATION, donation)
-    .then((rsp) => {
-      console.log(rsp)
-      toast.success("Donation created!");
-      navigate(APP_ROUTE.DASH);
-    })
-    .catch ((err) => {
-      toast.error("Failed to create donation. Try again later.");
-      console.log('Failed to create donation: ', err);
-    });
+      .then((rsp) => {
+        toast.success("Thanks for donating!");
+        navigate(APP_ROUTE.DASH);
+      })
+      .catch ((err) => {
+        toast.error("Failed to create donation. Try again later.");
+        console.log('Failed to create donation: ', err);
+      });
   }
 
   if (!donation) return <h2> Please login to make a donation. </h2>
@@ -151,6 +157,7 @@ export default function Donate() {
             <DateTimePicker 
               label='From Date'
               value={fromDate}
+              disablePast
               onChange={(v) => onDateChange('from_date', setFromDate, v)}
               slotProps={{
                 textField: { fullWidth: true, error: !donation.from_date }
@@ -161,6 +168,7 @@ export default function Donate() {
             <DateTimePicker 
               label='To Date'
               value={toDate}
+              disablePast
               onChange={(v) => onDateChange('to_date', setToDate, v)}
               slotProps={{
                 textField: { fullWidth: true, error: !donation.to_date }
