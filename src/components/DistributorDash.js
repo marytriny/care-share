@@ -3,14 +3,16 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { CartesianGrid, Tooltip, XAxis, YAxis, AreaChart, Area } from 'recharts'
 import { Paper, Typography, Table, TableBody, TableCell, TableContainer, TableHead, 
-  TableRow, IconButton } from '@mui/material';
+  TableRow, IconButton, Button } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import moment from 'moment';
 
 import { API_ROUTE } from '../utils/constants';
+import { generateReport } from '../utils/common';
 import OrgDetailsDialog from '../components/OrgDetailsDialog'
 
 const columns = [ 'item', 'quantity', 'from_date', 'to_date', 'donor', 'address' ];
@@ -21,6 +23,7 @@ export default function DonorDash({user}) {
   // Table data for all available and accepted donations
   const [availableDonations, setAvailableDonations] = useState([])
   const [acceptedDonations, setAcceptedDonations] = useState([])
+  const [completedDonations, setCompletedDonations] = useState([])
 
   const [showMoreDialog, setShowMoreDialog] = useState(false)
   const [selectedDonation, setSelectedDonation] = useState(null)
@@ -33,12 +36,17 @@ export default function DonorDash({user}) {
     axios.post(API_ROUTE.ACCEPTED_DONATIONS, { distributor: user.organization })
       .then((rsp) => setAcceptedDonations(rsp.data.map(x => 
         ({...x, address: x.address + ' ' + x.city + ' ' + x.state + ' ' + x.zip_code}))))
-      .catch ((err) => console.log('Failed to get accepted donations table ', err));
+      .catch ((err) => console.log('Failed to get accepted donations data ', err));
 
     axios.get(API_ROUTE.DONATION)
       .then((rsp) => setAvailableDonations(rsp.data.map(x => 
         ({...x, address: x.address + ' ' + x.city + ' ' + x.state + ' ' + x.zip_code}))))
-      .catch ((err) => console.log('Failed to get available donations table ', err));
+      .catch ((err) => console.log('Failed to get available donations data ', err));
+
+    axios.post(API_ROUTE.COMPLETED_DONATIONS, { distributor: user.organization })
+      .then((rsp) => setCompletedDonations(rsp.data.map(x => 
+        ({...x, address: x.address + ' ' + x.city + ' ' + x.state + ' ' + x.zip_code}))))
+      .catch ((err) => console.log('Failed to get completed donations data ', err));
   }
 
   const donationRsp = (data, status) => {
@@ -140,6 +148,7 @@ export default function DonorDash({user}) {
 
   return(
     <div>
+      {/* Accepted Donations Table */}
       { acceptedDonations.length > 0 && 
         <>
           <Typography variant='h5' color='primary' align='left' sx={{mt: '40px'}}> <b>Accepted Donations</b> </Typography>
@@ -151,8 +160,31 @@ export default function DonorDash({user}) {
         </>
       }
 
+      {/* Available Donations Table */}
       <Typography variant='h5' color='primary' align='left' sx={{mt: '40px'}}> Available Donations </Typography>
       <PrintTable rows={availableDonations} />
+
+      {/* Completed Donations Chart */}
+      <Typography variant='h5' color='primary' align='left' sx={{mt: '40px'}}> Completed Donations </Typography>
+      <Typography align='left' color='subtext.main'> 
+        The chart below shows all donations successfully completed by {user?.organization} so far.
+      </Typography>
+      <div style={{ maxWidth: '1000px', marginTop: '20px' }}>
+        <AreaChart width={1000} height={400} data={completedDonations} margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="monthday" name='Time' />
+          <YAxis dataKey="quantity" name='Quantity' />
+          <Tooltip />
+          <Area type="monotone" dataKey="quantity" name='Quantity' stroke="#d7bde2" fill="#d7bde2" />
+        </AreaChart>    
+        {/* CSV Report Button */}
+        <div style={{ textAlign: 'right' }}>
+          <Button onClick={() => generateReport(columns, completedDonations)} variant='contained' size='small'> 
+            Generate CSV Report
+          </Button>
+        </div> 
+      </div>
+
 
       <OrgDetailsDialog org={selectedDonation} showMoreDialog={showMoreDialog} setShowMoreDialog={setShowMoreDialog} />
     </div>

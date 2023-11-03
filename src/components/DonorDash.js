@@ -12,7 +12,8 @@ import moment from 'moment';
 
 // Local imports
 import { API_ROUTE, APP_ROUTE } from '../utils/constants';
-import OrgDetailsDialog from '../components/OrgDetailsDialog'
+import { generateReport } from '../utils/common';
+import OrgDetailsDialog from '../components/OrgDetailsDialog';
 
 // Donation table columns
 const columns = [ 'item', 'quantity', 'from_date', 'to_date', 'distributor', 'status' ];
@@ -47,29 +48,6 @@ export default function DonorDash({user}) {
     axios.post(API_ROUTE.DONOR_DONATIONS, { donor: user.organization })
       .then((rsp) => setRows(rsp.data))
       .catch ((err) => console.log('Failed to get donation table ', err));
-  }
-
-  // Generate CSV report of all donations by the current donor and download file to machine.
-  const generateReport = () => {
-    // Convert array of objects to CSV
-    const fileData = [
-      columns.join(','),
-      ...rows.map(obj => columns.reduce((acc, key) =>
-        `${acc}${!acc.length ? '' : ','}"${(obj[key] === null) ? '' : String(obj[key])}"`, ''
-      ))
-    ].join('\n');
-
-    // Create Blob
-    const blob = new Blob([fileData], { type: "application/json" })
-    const url = URL.createObjectURL(blob)
-    // window.open(url) // to open in new tab
-    
-    // Download CSV
-    const link = document.createElement("a")
-    link.download = `careshare_donations_${moment(new Date()).format("YY-MM-DD")}.csv`
-    link.href = url
-    link.click()
-    link.remove()
   }
 
   const cancel = (id, cancel = false) => {
@@ -166,7 +144,7 @@ export default function DonorDash({user}) {
       </div>
       {/* CSV Report Button */}
       <div style={{ textAlign: 'left' }}>
-        <Button onClick={generateReport} variant='contained' size='small'> 
+        <Button onClick={() => generateReport(columns, rows)} variant='contained' size='small'> 
           Generate CSV Report
         </Button>
       </div>

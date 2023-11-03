@@ -11,7 +11,7 @@ import './App.css';
 import 'react-toastify/dist/ReactToastify.css';
 import { theme } from './utils/theme';
 import { APP_ROUTE } from './utils/constants';
-import { useUser } from './utils/customHooks';
+import { useUser } from './auth/customHooks';
 import AccountButton from './components/AccountButton';
 import Home from './pages/Home';
 import Dash from './pages/Dash';

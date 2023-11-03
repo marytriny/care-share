@@ -73,7 +73,9 @@ export default function Home() {
             Total Donations over Time
           </Typography>
           <Typography align='center'>
-            The chart above shows all successful donations over time from all of our lovely donors.
+            The chart above shows all successful donations over time from all of our lovely donors. <br/>
+            All in all, about <b> {allDonationsOverTime.length > 0 && allDonationsOverTime.map(({quantity}) => quantity).reduce((a,b)=>a+b)} </b> 
+            goods have been distributed to those in need using CareShare so far!
           </Typography>   
         </div>
 
@@ -99,7 +101,7 @@ export default function Home() {
             Join CareShare today and start making a difference.
             Together, we can reduce waste and help others one donation at a time!<br/>
           </p>
-          <Button href={APP_ROUTE.SIGN_UP} variant='contained' color='secondary'> Sign Up </Button>
+          <Button href={APP_ROUTE.SIGN_UP} variant='contained' color='secondary' sx={{mt: 2}}> Sign Up </Button>
         </Paper>        
       </div>
     </div>

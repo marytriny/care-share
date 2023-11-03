@@ -5,8 +5,8 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 // Local imports
 import { APP_ROUTE } from '../utils/constants';
-import { useUser } from '../utils/customHooks';
-import { storeTokenInLocalStorage } from '../utils/common';
+import { useUser } from '../auth/customHooks';
+import { storeTokenInLocalStorage } from '../auth/common';
 
 const Account = () => {
 

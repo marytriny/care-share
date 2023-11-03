@@ -15,7 +15,7 @@ import moment from 'moment';
 
 // Local imports
 import { API_ROUTE, APP_ROUTE } from '../utils/constants';
-import { useUser } from '../utils/customHooks';
+import { useUser } from '../auth/customHooks';
 import states from '../utils/states.json'
 
 const IMaskPhoneInput = IMaskMixin(({ ...props }) => {

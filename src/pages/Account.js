@@ -7,7 +7,7 @@ import { toast } from 'react-toastify';
 // Local imports
 import { API_ROUTE, DEFAULT_ACCOUNT } from '../utils/constants';
 import AccountForm from '../components/AccountForm';
-import { useUser } from '../utils/customHooks';
+import { useUser } from '../auth/customHooks';
 
 const Account = () => {
 

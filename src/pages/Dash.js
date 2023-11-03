@@ -5,7 +5,7 @@ import { Typography } from '@mui/material';
 
 // Local imports
 import { API_ROUTE } from '../utils/constants';
-import { useUser } from '../utils/customHooks';
+import { useUser } from '../auth/customHooks';
 import DonorDash from '../components/DonorDash';
 import DistributorDash from '../components/DistributorDash'
 
