@@ -45,7 +45,7 @@ const SignIn = () => {
 
   return (
     // SIGN IN FORM
-    <Paper className='sign-up' sx={{ maxWidth: '400px' }}>
+    <Paper className='form' sx={{ maxWidth: '400px' }}>
       <Stack spacing={2}>
         <Typography variant='h4' align='center' color='primary'> Sign In </Typography>
         <TextField 

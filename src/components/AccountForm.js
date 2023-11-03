@@ -55,7 +55,7 @@ const AccountFrom = ({ account, setAccount, submitText, onSubmit, update, update
   }
 
   return (
-    <Paper className='sign-up'>
+    <Paper className='form'>
       <Stack spacing={2}>
         { update ? (
           <Typography variant='h4' align='center' color='primary'> Account Details </Typography>

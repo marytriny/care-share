@@ -86,7 +86,7 @@ export default function Donate() {
 
   if (!donation) return <h2> Please login to make a donation. </h2>
   else return(
-    <Paper className='sign-up'>
+    <Paper className='form'>
       <Stack spacing={2}>
         <Typography variant='h4' align='center' color='primary'> Donation Details </Typography>
         <div style={{ display:'flex' }}>

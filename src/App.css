@@ -14,7 +14,7 @@
   padding: 10px;
 }
 
-/* Home Page */
+/* Home Page Styling*/
 .weekly-award {
   display: flex; 
   margin: 40px 0 80px;
@@ -36,14 +36,14 @@
   padding: 10px;
   max-width: 340px;
 }
-/**********************/
 
-.sign-up {
+/* Used for forms to sign-up, edit account, donate */
+.form {
   text-align: left;
   margin: auto;
   margin-bottom: 20px;
   padding: 20px;
-  width: 70%;
+  max-width: 1000px;
 }
 
 /* Unset the all caps default text used on MUI buttons */
