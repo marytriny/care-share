@@ -25,6 +25,7 @@ export default function OrgDetailsDialog({org, showMoreDialog, setShowMoreDialog
         {org.poc_name} {org.poc_phone}
         {org.notes && 
           <>
+            <br/> <br/>
             <b> Additional notes: </b> <br/>
             {org.notes}
           </>

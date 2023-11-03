@@ -14,6 +14,7 @@ export const API_ROUTE = {
   ACCEPTED_DONATIONS: `${API_URL}/donation/accepted`,
   DONATION_STATUS: `${API_URL}/donation/status`,
   UPDATE_EXPIRED: `${API_URL}/donation/expired`,
+  HOME_DATA: `${API_URL}/donation/homeData`,
 }
 
 export const APP_ROUTE = {

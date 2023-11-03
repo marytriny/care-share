@@ -30,7 +30,8 @@ function App() {
         {/* Navigation bar */}
         <div className='navbar'>
           <div align='left' style={{display: 'flex', height: '40px' }}>
-            <Typography variant='h5' sx={{pt: '4px'}}> CareShare </Typography>
+            <Typography variant='h4' sx={{pt: '4px', fontFamily: 'Gabriola'}}> CareShare </Typography>
+            <img width="16" height="16" src="https://img.icons8.com/ultraviolet/40/like--v1.png" alt=''/>
             <Button href={APP_ROUTE.HOME} color='new' variant='contained' sx={{mx: '5px'}}> Home </Button>
             { authenticated && <Button href={APP_ROUTE.DASH} color='edit' variant='contained'> Dashboard </Button>}
           </div>

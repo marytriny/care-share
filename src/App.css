@@ -3,6 +3,9 @@
   text-align: center;
   height: 100vh;
   overflow: auto; /* fills screen */
+  max-width: 1400px;
+  margin: auto;
+  padding: 0 20px;
 }
 
 .navbar {
@@ -11,12 +14,30 @@
   padding: 10px;
 }
 
-.home {
-  border-style: double;
-  padding: 10px;
-  max-width: 600px;
-  margin: auto;
+/* Home Page */
+.weekly-award {
+  display: flex; 
+  margin: 40px 0 80px;
+  justify-content: space-around;
 }
+
+.weekly-award-card {
+  display: flex;
+  align-items: flex-end;
+}
+
+.weekly-award-text {
+  text-align: left;
+  margin-right: 10px;
+  max-width: 370px
+}
+
+.about-us {
+  padding: 10px;
+  max-width: 340px;
+}
+/**********************/
+
 .sign-up {
   text-align: left;
   margin: auto;

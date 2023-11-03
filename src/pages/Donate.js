@@ -14,9 +14,9 @@ import dayjs from 'dayjs';
 import moment from 'moment';
 
 // Local imports
+import { API_ROUTE, APP_ROUTE } from '../utils/constants';
 import { useUser } from '../utils/customHooks';
 import states from '../utils/states.json'
-import { API_ROUTE, APP_ROUTE } from '../utils/constants';
 
 const IMaskPhoneInput = IMaskMixin(({ ...props }) => {
   return <TextField {...props} />;
@@ -73,7 +73,7 @@ export default function Donate() {
       return;
     }
 
-    axios.post(API_ROUTE.DONATION, donation)
+    axios.post(API_ROUTE.DONATION, donation) 
       .then((rsp) => {
         toast.success("Thanks for donating!");
         navigate(APP_ROUTE.DASH);
