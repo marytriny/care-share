@@ -17,10 +17,7 @@ const SignIn = () => {
 
   // Check if the user is already authenticated
   useEffect(() => {
-    console.log(user, authenticated)
-    if (user || authenticated) {
-      navigate(APP_ROUTE.DASH)
-    }
+    if (user || authenticated) navigate(APP_ROUTE.DASH);
     // eslint-disable-next-line
   }, [user, authenticated]);
 

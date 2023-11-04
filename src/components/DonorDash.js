@@ -159,7 +159,7 @@ export default function DonorDash({user}) {
           <Area type="monotone" dataKey="quantity" name='Quantity' stroke="#d7bde2" fill="#d7bde2" />
         </AreaChart>    
         <Typography variant='h4' color='primary'>
-          Total Donations over Time
+          Your Impact
         </Typography>
         <Typography>
           The chart above shows all successful donations over time made by {user?.organization}.

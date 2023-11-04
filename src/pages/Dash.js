@@ -15,13 +15,13 @@ export default function Dash() {
 
   useEffect(() => {
     axios.put(API_ROUTE.UPDATE_EXPIRED)
-      .catch ((err) => console.log('Failed to update expired donations ', err));
+      .catch((err) => console.log('Failed to update expired donations ', err));
   }, []);
 
   if (!user || !authenticated) return <h2> Please login to access dashboard. </h2>
   else return(
     <div style={{ padding: '0 10px' }}>
-      <Typography variant='h4' color='primary'> Welcome {user.organization}! </Typography>
+      <Typography variant='h4' color='primary'> Welcome {user.organization} </Typography>
       { user.role === 'DONOR'       && <DonorDash user={user} /> }
       { user.role === 'DISTRIBUTOR' && <DistributorDash user={user} /> }
     </div>

@@ -25,7 +25,7 @@ export default function Home() {
   }, []);
 
   return(
-    <div style={{ maxWidth: '1200px', margin: 'auto' }}>
+    <div style={{ maxWidth: '1200px', margin: 'auto', marginBottom: '60px' }}>
       {/* Page Title */}
       <div style={{ display: 'flex', justifyContent: 'center' }}>
         <Typography variant='h2' color='primary' style={{fontFamily: 'Gabriola'}}>

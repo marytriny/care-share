@@ -36,17 +36,16 @@ export default function DonorDash({user}) {
     axios.post(API_ROUTE.ACCEPTED_DONATIONS, { distributor: user.organization })
       .then((rsp) => setAcceptedDonations(rsp.data.map(x => 
         ({...x, address: x.address + ' ' + x.city + ' ' + x.state + ' ' + x.zip_code}))))
-      .catch ((err) => console.log('Failed to get accepted donations data ', err));
+      .catch((err) => console.log('Failed to get accepted donations data ', err));
 
     axios.get(API_ROUTE.DONATION)
       .then((rsp) => setAvailableDonations(rsp.data.map(x => 
         ({...x, address: x.address + ' ' + x.city + ' ' + x.state + ' ' + x.zip_code}))))
-      .catch ((err) => console.log('Failed to get available donations data ', err));
+      .catch((err) => console.log('Failed to get available donations data ', err));
 
-    axios.post(API_ROUTE.COMPLETED_DONATIONS, { distributor: user.organization })
-      .then((rsp) => setCompletedDonations(rsp.data.map(x => 
-        ({...x, address: x.address + ' ' + x.city + ' ' + x.state + ' ' + x.zip_code}))))
-      .catch ((err) => console.log('Failed to get completed donations data ', err));
+    axios.post(API_ROUTE.DISTRIBUTOR_STATS, { distributor: user.organization })
+      .then((rsp) => setCompletedDonations(rsp.data))
+      .catch((err) => console.log('Failed to get completed donations data ', err));
   }
 
   const donationRsp = (data, status) => {
@@ -61,6 +60,13 @@ export default function DonorDash({user}) {
         toast.error('Error accepting donation. Try again later.')
         console.log('Error accepting donation. ', err)
       })
+  }
+
+  const getReport = async() => {
+    const rsp = await axios.post(API_ROUTE.COMPLETED_DONATIONS, { distributor: user.organization })
+    const rows = rsp.data.map(x => 
+      ({...x, address: x.address + ' ' + x.city + ' ' + x.state + ' ' + x.zip_code}))
+    generateReport(columns, rows)
   }
 
   const showMore = (donation) => {
@@ -147,7 +153,7 @@ export default function DonorDash({user}) {
   }
 
   return(
-    <div>
+    <div style={{ marginBottom: '60px' }}>
       {/* Accepted Donations Table */}
       { acceptedDonations.length > 0 && 
         <>
@@ -172,20 +178,19 @@ export default function DonorDash({user}) {
       <div style={{ maxWidth: '1000px', marginTop: '20px' }}>
         <AreaChart width={1000} height={400} data={completedDonations} margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="monthday" name='Time' />
+          <XAxis dataKey="from_date" name='Time' />
           <YAxis dataKey="quantity" name='Quantity' />
           <Tooltip />
           <Area type="monotone" dataKey="quantity" name='Quantity' stroke="#d7bde2" fill="#d7bde2" />
         </AreaChart>    
         {/* CSV Report Button */}
         <div style={{ textAlign: 'right' }}>
-          <Button onClick={() => generateReport(columns, completedDonations)} variant='contained' size='small'> 
+          <Button onClick={getReport} variant='contained' size='small'> 
             Generate CSV Report
           </Button>
         </div> 
       </div>
-
-
+      {/* Dialog */}
       <OrgDetailsDialog org={selectedDonation} showMoreDialog={showMoreDialog} setShowMoreDialog={setShowMoreDialog} />
     </div>
   );
