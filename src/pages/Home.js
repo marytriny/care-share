@@ -6,20 +6,23 @@ import { CartesianGrid, Tooltip, XAxis, YAxis, AreaChart, Area } from 'recharts'
 
 // Local imports
 import { APP_ROUTE, API_ROUTE } from '../utils/constants';
+import Map from '../components/Map';
 
 export default function Home() {
   
-  const [allDonationsOverTime, setAllDonationsOverTime] = useState([])
-  const [distributorOfTheWeek, setDistributorOfTheWeek] = useState('')
   const [donorOfTheWeek, setDonorOfTheWeek] = useState('')
+  const [distributorOfTheWeek, setDistributorOfTheWeek] = useState('')
+  const [allDonationsOverTime, setAllDonationsOverTime] = useState([])
+  const [allDistributorLocations, setAllDistributorLocations] = useState([])
 
   // Get the Donor of the Week and Total Donations over Time chart data
   useEffect(() => {
     axios.get(API_ROUTE.HOME_DATA)
       .then((rsp) => {
-        setAllDonationsOverTime(rsp.data.allDonationsOverTime)
-        setDistributorOfTheWeek(rsp.data.distributorOfTheWeek)
         setDonorOfTheWeek(rsp.data.donorOfTheWeek)
+        setDistributorOfTheWeek(rsp.data.distributorOfTheWeek)
+        setAllDonationsOverTime(rsp.data.allDonationsOverTime)
+        setAllDistributorLocations(rsp.data.allDistributorLocations)
       })
       .catch ((err) => console.log('Failed to get accepted donations table ', err));
   }, []);
@@ -68,7 +71,7 @@ export default function Home() {
             <YAxis dataKey="quantity" name='Quantity' />
             <Tooltip />
             <Area type="monotone" dataKey="quantity" name='Quantity' stroke="#d7bde2" fill="#d7bde2" />
-          </AreaChart>     
+          </AreaChart>
           <Typography variant='h4' color='primary' align='center'>
             Total Donations over Time
           </Typography>
@@ -103,6 +106,16 @@ export default function Home() {
           </p>
           <Button href={APP_ROUTE.SIGN_UP} variant='contained' color='secondary' sx={{mt: 2}}> Sign Up </Button>
         </Paper>        
+      </div>
+      <div style={{ marginTop: '80px' }}>
+        <Typography variant='h4' color='primary' align='left'>
+          Communities Impacted
+        </Typography>
+        <Typography align='left'>
+          The map below shows the various communitites that have benefited from our services so far. <br/>
+          Our goal is to help serve communities all accross the US!
+        </Typography>   
+        <Map center={[28, -80]} zoom={6} markers={allDistributorLocations}/>
       </div>
     </div>
   );

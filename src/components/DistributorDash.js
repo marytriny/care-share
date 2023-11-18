@@ -10,42 +10,53 @@ import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import moment from 'moment';
+import usZips from 'us-zips'
 
 import { API_ROUTE } from '../utils/constants';
 import { generateReport } from '../utils/common';
 import OrgDetailsDialog from '../components/OrgDetailsDialog'
+import Map from './Map';
 
 const columns = [ 'item', 'quantity', 'from_date', 'to_date', 'donor', 'address' ];
-const isDate = (field_name) => (field_name === 'from_date' || field_name === 'to_date');
+const isDate = field_name => (field_name === 'from_date' || field_name === 'to_date');
+const addAddress = array =>
+  array.map(x => ({...x, address: x.address + ' ' + x.city + ' ' + x.state + ' ' + x.zip_code}));
 
-export default function DonorDash({user}) {
+export default function DistributorDash({user}) {
 
-  // Table data for all available and accepted donations
   const [availableDonations, setAvailableDonations] = useState([])
   const [acceptedDonations, setAcceptedDonations] = useState([])
   const [completedDonations, setCompletedDonations] = useState([])
+  const [allDonors, setAllDonors] = useState([])
+  const [location, setLocation] = useState([28.032879, -80.81605])
 
   const [showMoreDialog, setShowMoreDialog] = useState(false)
   const [selectedDonation, setSelectedDonation] = useState(null)
 
   useEffect(() => {
-    if(user) loadTables();
+    if(user) {
+      loadTables();
+      const loc = usZips[user.zip_code]
+      setLocation([loc.latitude, loc.longitude])
+    }
   }, [user]);
 
   const loadTables = () => {
     axios.post(API_ROUTE.ACCEPTED_DONATIONS, { distributor: user.organization })
-      .then((rsp) => setAcceptedDonations(rsp.data.map(x => 
-        ({...x, address: x.address + ' ' + x.city + ' ' + x.state + ' ' + x.zip_code}))))
+      .then((rsp) => setAcceptedDonations(addAddress(rsp.data)))
       .catch((err) => console.log('Failed to get accepted donations data ', err));
 
     axios.get(API_ROUTE.DONATION)
-      .then((rsp) => setAvailableDonations(rsp.data.map(x => 
-        ({...x, address: x.address + ' ' + x.city + ' ' + x.state + ' ' + x.zip_code}))))
+      .then((rsp) => setAvailableDonations(addAddress(rsp.data)))
       .catch((err) => console.log('Failed to get available donations data ', err));
 
     axios.post(API_ROUTE.DISTRIBUTOR_STATS, { distributor: user.organization })
       .then((rsp) => setCompletedDonations(rsp.data))
       .catch((err) => console.log('Failed to get completed donations data ', err));
+
+    axios.get(API_ROUTE.ALL_DONORS)
+      .then((rsp) => setAllDonors(rsp.data))
+      .catch((err) => console.log('Failed to get all donors data for map ', err));
   }
 
   const donationRsp = (data, status) => {
@@ -63,10 +74,8 @@ export default function DonorDash({user}) {
   }
 
   const getReport = async() => {
-    const rsp = await axios.post(API_ROUTE.COMPLETED_DONATIONS, { distributor: user.organization })
-    const rows = rsp.data.map(x => 
-      ({...x, address: x.address + ' ' + x.city + ' ' + x.state + ' ' + x.zip_code}))
-    generateReport(columns, rows)
+    const rows = await axios.post(API_ROUTE.COMPLETED_DONATIONS, { distributor: user.organization })
+    generateReport(columns, addAddress(rows.data))
   }
 
   const showMore = (donation) => {
@@ -95,7 +104,7 @@ export default function DonorDash({user}) {
   // Display the table 
   const PrintTable = ({rows, accepted}) => {
     return (
-      <TableContainer component={Paper} sx={{ maxHeight: "400px", maxWidth: '1200px' }}>
+      <TableContainer component={Paper} sx={{ maxHeight: "400px" }}>
         <Table stickyHeader size='small'>
           <TableHead>
             <TableRow>
@@ -153,7 +162,7 @@ export default function DonorDash({user}) {
   }
 
   return(
-    <div style={{ marginBottom: '60px' }}>
+    <div style={{ marginBottom: '60px', maxWidth: '1200px' }}>
       {/* Accepted Donations Table */}
       { acceptedDonations.length > 0 && 
         <>
@@ -170,12 +179,21 @@ export default function DonorDash({user}) {
       <Typography variant='h5' color='primary' align='left' sx={{mt: '40px'}}> Available Donations </Typography>
       <PrintTable rows={availableDonations} />
 
+      {/* All Donors Map */}
+      <div style={{ marginTop: '20px' }}>
+        <Typography variant='h5' color='primary' align='left' sx={{mt: '40px'}}> Nearby Donors </Typography>
+        <Typography align='left' color='subtext.main'>
+          View all donors and their location in the map below.
+        </Typography>   
+        <Map center={location} zoom={10} markers={allDonors} usePin />
+      </div>
+
       {/* Completed Donations Chart */}
       <Typography variant='h5' color='primary' align='left' sx={{mt: '40px'}}> Completed Donations </Typography>
       <Typography align='left' color='subtext.main'> 
         The chart below shows all donations successfully completed by {user?.organization} so far.
       </Typography>
-      <div style={{ maxWidth: '1000px', marginTop: '20px' }}>
+      <div style={{ marginTop: '20px' }}>
         <AreaChart width={1000} height={400} data={completedDonations} margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="from_date" name='Time' />

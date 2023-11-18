@@ -37,6 +37,12 @@
   max-width: 340px;
 }
 
+.leaflet-container {
+  height: 500px;
+  width: 100%;
+  /* margin: auto; */
+}
+
 /* Used for forms to sign-up, edit account, donate */
 .form {
   text-align: left;

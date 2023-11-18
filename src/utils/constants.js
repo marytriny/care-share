@@ -8,6 +8,8 @@ export const API_ROUTE = {
   UPDATE_USER: `${API_URL}/account/update`,
   UPDATE_PASSWORD: `${API_URL}/account/updatePassword`,
   ORG_DETAILS: `${API_URL}/account/org`,
+  ALL_DONORS: `${API_URL}/account/allDonors`,
+  ALL_DISTRIBUTORS: `${API_URL}/account/allDistributors`,
   // Donation paths
   DONATION: `${API_URL}/donation`,
   DONOR_DONATIONS: `${API_URL}/donation/donor`,

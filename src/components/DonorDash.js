@@ -14,6 +14,7 @@ import moment from 'moment';
 import { API_ROUTE, APP_ROUTE } from '../utils/constants';
 import { generateReport } from '../utils/common';
 import OrgDetailsDialog from '../components/OrgDetailsDialog';
+import Map from './Map';
 
 // Donation table columns
 const columns = [ 'item', 'quantity', 'from_date', 'to_date', 'distributor', 'status' ];
@@ -30,6 +31,8 @@ export default function DonorDash({user}) {
   const [showMoreDialog, setShowMoreDialog] = useState(false)
   const [selectedOrg, setSelectedOrg] = useState(null)
   const [donationsOverTime, setDonationsOverTime] = useState([])
+  const [allDistributors, setallDistributors] = useState([])
+  const [location, setLocation] = useState([28.032879, -80.81605])
 
   const navigate = useNavigate();
 
@@ -39,7 +42,10 @@ export default function DonorDash({user}) {
       loadTable()
       axios.post(API_ROUTE.DONOR_STATS, { donor: user.organization })
         .then((rsp) => setDonationsOverTime(rsp.data))
-        .catch ((err) => console.log('Failed to get donation table ', err));
+          .catch ((err) => console.log('Failed to get donation table ', err));
+      axios.get(API_ROUTE.ALL_DISTRIBUTORS)
+        .then((rsp) => setallDistributors(rsp.data))
+        .catch((err) => console.log('Failed to get all distributors data for map ', err));
     };
     // eslint-disable-next-line
   }, [user]);
@@ -148,9 +154,15 @@ export default function DonorDash({user}) {
           Generate CSV Report
         </Button>
       </div>
-
+      
       {/* Chart */}
       <div style={{ maxWidth: '1000px', margin: '60px 0'}}>
+        <Typography variant='h5' color='primary' align='left'>
+          Your Impact
+        </Typography>
+        <Typography align='left' color='subtext.main' sx={{ mb: 1 }}>
+          The chart below shows all successful donations over time made by {user?.organization}.
+        </Typography>  
         <AreaChart width={1000} height={400} data={donationsOverTime} margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="from_date" name='Time' />
@@ -158,13 +170,17 @@ export default function DonorDash({user}) {
           <Tooltip />
           <Area type="monotone" dataKey="quantity" name='Quantity' stroke="#d7bde2" fill="#d7bde2" />
         </AreaChart>    
-        <Typography variant='h4' color='primary'>
-          Your Impact
-        </Typography>
-        <Typography>
-          The chart above shows all successful donations over time made by {user?.organization}.
-        </Typography>  
       </div>
+
+      {/* All Distributors Map */}
+      <div style={{ marginTop: '20px', marginBottom: '40px' }}>
+        <Typography variant='h5' color='primary' align='left' sx={{mt: '40px'}}> Nearby Distributors </Typography>
+        <Typography align='left' color='subtext.main'>
+          View all distributors and their location in the map below.
+        </Typography>   
+        <Map center={location} zoom={10} markers={allDistributors} usePin />
+      </div>
+
       {/* Dialog */}
       <OrgDetailsDialog org={selectedOrg} showMoreDialog={showMoreDialog} setShowMoreDialog={setShowMoreDialog} />
     </div>

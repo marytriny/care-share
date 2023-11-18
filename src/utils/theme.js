@@ -10,7 +10,7 @@ export const theme = createTheme({
     // secondary: {
     //   main: '#e7edf5',
     // },
-    new: {
+    home: {
       main: '#AED6F1'
     },
     edit: {
