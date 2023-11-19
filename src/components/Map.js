@@ -19,6 +19,7 @@ const getRadius = (contribution) => {
 }
 
 const MapMarker = ({org, usePin}) => {
+  if (!org.latlng || !org.latlng[0] || !org.latlng[1]) return
   if (usePin) return (
     <Marker position={org.latlng}>
       <Popup>

@@ -1,6 +1,5 @@
 // Import packages
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { CartesianGrid, Tooltip, XAxis, YAxis, AreaChart, Area } from 'recharts'
@@ -13,12 +12,11 @@ import moment from 'moment';
 import usZips from 'us-zips'
 
 import { API_ROUTE } from '../utils/constants';
-import { generateReport } from '../utils/common';
+import { printRow, generateReport } from '../utils/common';
 import OrgDetailsDialog from '../components/OrgDetailsDialog'
 import Map from './Map';
 
-const columns = [ 'item', 'quantity', 'from_date', 'to_date', 'donor', 'address' ];
-const isDate = field_name => (field_name === 'from_date' || field_name === 'to_date');
+const columns = [ 'item', 'quantity', 'value', 'from_date', 'to_date', 'donor', 'address' ];
 
 export default function DistributorDash({user}) {
 
@@ -119,11 +117,7 @@ export default function DistributorDash({user}) {
           <TableBody>
             {rows.length > 0 ? rows.map((rowData) => (
               <TableRow key={rowData.id} hover>
-                {columns.map(x => 
-                  <TableCell key={x}> 
-                    { isDate(x) ? moment(rowData[x]).format('MM/DD hh:mm a') : rowData[x] } 
-                  </TableCell>
-                )}
+                {columns.map(x => printRow(x, rowData))}
                 { accepted ? (
                   <>
                     <TableCell key='more'> 
@@ -194,9 +188,9 @@ export default function DistributorDash({user}) {
         <AreaChart width={1000} height={400} data={completedDonations} margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="from_date" name='Time' />
-          <YAxis dataKey="quantity" name='Quantity' />
+          <YAxis dataKey="value" name='Value' />
           <Tooltip />
-          <Area type="monotone" dataKey="quantity" name='Quantity' stroke="#d7bde2" fill="#d7bde2" />
+          <Area type="monotone" dataKey="value" name='Value' stroke="#d7bde2" fill="#d7bde2" />
         </AreaChart>    
         {/* CSV Report Button */}
         <div style={{ textAlign: 'right' }}>

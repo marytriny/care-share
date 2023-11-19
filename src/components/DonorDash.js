@@ -8,16 +8,16 @@ import { Paper, Typography, Table, TableBody, TableCell, TableContainer, TableHe
   CardActionArea, CardContent, CardMedia, Button } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import UndoIcon from '@mui/icons-material/Undo';
-import moment from 'moment';
+import usZips from 'us-zips'
 
 // Local imports
 import { API_ROUTE, APP_ROUTE } from '../utils/constants';
-import { generateReport } from '../utils/common';
+import { printRow, generateReport } from '../utils/common';
 import OrgDetailsDialog from '../components/OrgDetailsDialog';
 import Map from './Map';
 
 // Donation table columns
-const columns = [ 'item', 'quantity', 'from_date', 'to_date', 'distributor', 'status' ];
+const columns = [ 'item', 'quantity', 'value', 'from_date', 'to_date', 'distributor', 'status' ];
 
 const cardMediaStyle={
   height: '100px',
@@ -40,6 +40,8 @@ export default function DonorDash({user}) {
   useEffect(() => {
     if(user) {
       loadTable()
+      const loc = usZips[user.zip_code]
+      setLocation([loc.latitude, loc.longitude])
       axios.post(API_ROUTE.DONOR_STATS, { donor: user.organization })
         .then((rsp) => setDonationsOverTime(rsp.data))
           .catch ((err) => console.log('Failed to get donation table ', err));
@@ -79,19 +81,6 @@ export default function DonorDash({user}) {
     })
   }
 
-  const printRow = (column, obj) => {
-    let rowData = '';
-    if (column === 'from_date' || column === 'to_date') {
-      rowData = moment(obj[column]).format('MM/DD hh:mm a');
-    }
-    else if (column === 'distributor') {
-      rowData = <Button onClick={() => showMore(obj)} size='small'> {obj[column]} </Button>
-    }
-    else rowData = obj[column];
-
-    return <TableCell key={column}> { rowData } </TableCell>;
-  }
-
   // Update column names so they are more human readable.
   // ex. column name 'from_date' would become 'From Date'.
   const formatHeader = (name) =>
@@ -111,7 +100,7 @@ export default function DonorDash({user}) {
           <TableBody>
             {rows.length > 0 ? rows.map((rowData) => (
               <TableRow key={rowData.id} hover>
-                {columns.map( x => printRow(x, rowData) )}
+                {columns.map(x => printRow(x, rowData, showMore))} 
                 <TableCell key='cancel'> 
                   { rowData.status === 'PENDING' &&
                     <IconButton onClick={() => cancel(rowData.id, true)} size='small' color='error' sx={{ p:0 }}> 
@@ -163,9 +152,9 @@ export default function DonorDash({user}) {
         <AreaChart width={1000} height={400} data={donationsOverTime} margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="from_date" name='Time' />
-          <YAxis dataKey="quantity" name='Quantity' />
+          <YAxis dataKey="value" name='Value' />
           <Tooltip />
-          <Area type="monotone" dataKey="quantity" name='Quantity' stroke="#d7bde2" fill="#d7bde2" />
+          <Area type="monotone" dataKey="value" name='Value' stroke="#d7bde2" fill="#d7bde2" />
         </AreaChart>    
       </div>
 

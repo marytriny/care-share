@@ -68,17 +68,17 @@ export default function Home() {
           <AreaChart width={800} height={400} data={allDonationsOverTime} >
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="from_date" name='Time' />
-            <YAxis dataKey="quantity" name='Quantity' />
+            <YAxis dataKey="value" name='Value' />
             <Tooltip />
-            <Area type="monotone" dataKey="quantity" name='Quantity' stroke="#d7bde2" fill="#d7bde2" />
+            <Area type="monotone" dataKey="value" name='Value' stroke="#d7bde2" fill="#d7bde2" />
           </AreaChart>
           <Typography variant='h4' color='primary' align='center'>
             Total Donations over Time
           </Typography>
           <Typography align='center'>
             The chart above shows all successful donations over time from all of our lovely donors. <br/>
-            All in all, about <b> {allDonationsOverTime.length > 0 && allDonationsOverTime.map(({quantity}) => quantity).reduce((a,b)=>a+b)} </b> 
-            goods have been distributed to those in need using CareShare so far!
+            All in all, about <b> ${allDonationsOverTime.length > 0 && allDonationsOverTime.map(({value}) => value).reduce((a,b)=>a+b)} </b> 
+            worth of goods have been distributed to those in need using CareShare so far!
           </Typography>   
         </div>
 

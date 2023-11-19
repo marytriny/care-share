@@ -6,7 +6,7 @@ import { toast } from 'react-toastify';
 import { IMaskMixin } from 'react-imask';
 
 // MUI imports
-import { Paper, Typography, Stack, TextField, Button, Autocomplete } from '@mui/material';
+import { Paper, Typography, Stack, TextField, Button, Autocomplete, InputAdornment } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateTimePicker  } from '@mui/x-date-pickers/DateTimePicker';
@@ -41,6 +41,7 @@ export default function Donate() {
       setDonation({
         item: '',
         quantity: 1,
+        value: 1,
         donor: user.organization,
         address: user.address,
         city: user.city,
@@ -66,7 +67,7 @@ export default function Donate() {
 
   const submit = () => {
     // Validate all required fields were entered correctly
-    if (!donation.item || !(Number(donation.quantity) > 0) || !donation.address || 
+    if (!donation.item || !(Number(donation.quantity) > 0) || !(Number(donation.value) > 0) || !donation.address || 
         !donation.city || !donation.state || !(donation.zip_code.length > 4) || !donation.poc_name || 
         !(donation.poc_phone.length === 14) || !donation.from_date || !donation.to_date ) {
       toast.error("Please fill each field");
@@ -110,6 +111,21 @@ export default function Donate() {
             value={donation.quantity} 
             onChange={onInputChange}
             error={!(Number(donation.quantity) > 0)}
+          />
+          <TextField 
+            label="Value" 
+            name="value" 
+            type='number'
+            variant="outlined" 
+            required
+            value={donation.value} 
+            onChange={onInputChange}
+            error={!(Number(donation.value) > 0)}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">$</InputAdornment>
+              ),
+            }}
           />
         </div>
         <Typography variant='h6' color='primary'> Pickup Location </Typography>

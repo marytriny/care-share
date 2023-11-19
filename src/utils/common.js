@@ -1,4 +1,22 @@
+import { TableCell, Button } from '@mui/material';
 import moment from 'moment';
+
+// Print Table Cell
+export const printRow = (column, obj, showMore) => {
+  let rowData = '';
+  if (column === 'value') {
+    rowData = '$' + obj[column]
+  }
+  else if (column === 'from_date' || column === 'to_date') {
+    rowData = moment(obj[column]).format('MM/DD hh:mm a');
+  }
+  else if (column === 'distributor') {
+    rowData = <Button onClick={() => showMore(obj)} size='small'> {obj[column]} </Button>
+  }
+  else rowData = obj[column];
+
+  return <TableCell key={column}> { rowData } </TableCell>;
+}
 
 // Generate CSV report of all donations by the current donor and download file to machine.
 export const generateReport = (columns, rows) => {
