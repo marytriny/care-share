@@ -70,10 +70,7 @@ export default function DonorDash({user}) {
   const showMore = (donation) => {
     axios.post(API_ROUTE.ORG_DETAILS, { organization: donation.distributor })
     .then((rsp) => {
-      const distributor = { ...rsp.data, 
-        address: rsp.data.address + ' ' + rsp.data.city + ' ' + rsp.data.state + ' ' + rsp.data.zip_code 
-      }
-      setSelectedOrg(distributor)
+      setSelectedOrg(rsp.data)
       setShowMoreDialog(true)
     })
     .catch ((err) => {

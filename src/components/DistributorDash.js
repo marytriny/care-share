@@ -19,8 +19,6 @@ import Map from './Map';
 
 const columns = [ 'item', 'quantity', 'from_date', 'to_date', 'donor', 'address' ];
 const isDate = field_name => (field_name === 'from_date' || field_name === 'to_date');
-const addAddress = array =>
-  array.map(x => ({...x, address: x.address + ' ' + x.city + ' ' + x.state + ' ' + x.zip_code}));
 
 export default function DistributorDash({user}) {
 
@@ -43,11 +41,11 @@ export default function DistributorDash({user}) {
 
   const loadTables = () => {
     axios.post(API_ROUTE.ACCEPTED_DONATIONS, { distributor: user.organization })
-      .then((rsp) => setAcceptedDonations(addAddress(rsp.data)))
+      .then((rsp) => setAcceptedDonations(rsp.data))
       .catch((err) => console.log('Failed to get accepted donations data ', err));
 
     axios.get(API_ROUTE.DONATION)
-      .then((rsp) => setAvailableDonations(addAddress(rsp.data)))
+      .then((rsp) => setAvailableDonations(rsp.data))
       .catch((err) => console.log('Failed to get available donations data ', err));
 
     axios.post(API_ROUTE.DISTRIBUTOR_STATS, { distributor: user.organization })
@@ -75,14 +73,13 @@ export default function DistributorDash({user}) {
 
   const getReport = async() => {
     const rows = await axios.post(API_ROUTE.COMPLETED_DONATIONS, { distributor: user.organization })
-    generateReport(columns, addAddress(rows.data))
+    generateReport(columns, rows.data)
   }
 
   const showMore = (donation) => {
     axios.post(API_ROUTE.ORG_DETAILS, { organization: donation.donor })
     .then((rsp) => {
-      donation = {...rsp.data, 
-        address: donation.address,
+      donation = { ...rsp.data,
         from_date: moment(donation.from_date).format('MM/DD hh:mm a'),
         to_date: moment(donation.to_date).format('MM/DD hh:mm a'),
         notes: donation.notes
