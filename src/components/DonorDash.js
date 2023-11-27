@@ -8,6 +8,8 @@ import { Paper, Typography, Table, TableBody, TableCell, TableContainer, TableHe
   CardActionArea, CardContent, CardMedia, Button } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import UndoIcon from '@mui/icons-material/Undo';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useTheme } from '@mui/material/styles';
 import usZips from 'us-zips'
 
 // Local imports
@@ -26,6 +28,10 @@ const cardMediaStyle={
 };  
 
 export default function DonorDash({user}) {
+
+  // Used to make CSS adaptive to smaller screens like mobile and tablet devices.
+  const theme = useTheme();
+  const mobile = useMediaQuery(theme.breakpoints.down('md'));
 
   const [rows, setRows] = useState([])
   const [showMoreDialog, setShowMoreDialog] = useState(false)
@@ -81,6 +87,14 @@ export default function DonorDash({user}) {
     })
   }
 
+  const rowColor = status => {
+    switch (status) {
+      case 'PENDING': return theme.palette.pending.main;
+      case 'ACCEPTED': return theme.palette.accepted.main;
+      default: return ''
+    }
+  }
+
   // Update column names so they are more human readable.
   // ex. column name 'from_date' would become 'From Date'.
   const formatHeader = (name) =>
@@ -99,7 +113,7 @@ export default function DonorDash({user}) {
           </TableHead>
           <TableBody>
             {rows.length > 0 ? rows.map((rowData) => (
-              <TableRow key={rowData.id} hover>
+              <TableRow key={rowData.id} hover sx={{ backgroundColor: rowColor(rowData.status) }}>
                 {columns.map(x => printRow(x, rowData, showMore))} 
                 <TableCell key='cancel'> 
                   { rowData.status === 'PENDING' &&
@@ -149,7 +163,7 @@ export default function DonorDash({user}) {
         <Typography align='left' color='subtext.main' sx={{ mb: 1 }}>
           The chart below shows all successful donations over time made by {user?.organization}.
         </Typography>  
-        <AreaChart width={1000} height={400} data={donationsOverTime} margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
+        <AreaChart width={mobile ? 380 : 1000} height={400} data={donationsOverTime} margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="from_date" name='Time' />
           <YAxis dataKey="value" name='Value' />

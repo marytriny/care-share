@@ -8,6 +8,8 @@ import { Paper, Typography, Table, TableBody, TableCell, TableContainer, TableHe
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useTheme } from '@mui/material/styles';
 import moment from 'moment';
 import usZips from 'us-zips'
 
@@ -19,6 +21,10 @@ import Map from './Map';
 const columns = [ 'item', 'quantity', 'value', 'from_date', 'to_date', 'donor', 'address' ];
 
 export default function DistributorDash({user}) {
+
+  // Used to make CSS adaptive to smaller screens like mobile and tablet devices.
+  const theme = useTheme();
+  const mobile = useMediaQuery(theme.breakpoints.down('md'));
 
   const [availableDonations, setAvailableDonations] = useState([])
   const [acceptedDonations, setAcceptedDonations] = useState([])
@@ -98,7 +104,8 @@ export default function DistributorDash({user}) {
 
   // Display the table 
   const PrintTable = ({rows, accepted}) => {
-    return (
+    if (rows.length < 1) return (<Typography align='left'>No donations at this time.</Typography>)
+    else return (
       <TableContainer component={Paper} sx={{ maxHeight: "400px" }}>
         <Table stickyHeader size='small'>
           <TableHead>
@@ -115,7 +122,7 @@ export default function DistributorDash({user}) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.length > 0 ? rows.map((rowData) => (
+            { rows.map( rowData => (
               <TableRow key={rowData.id} hover>
                 {columns.map(x => printRow(x, rowData))}
                 { accepted ? (
@@ -145,7 +152,7 @@ export default function DistributorDash({user}) {
                   )
                 }
               </TableRow>
-            )) : (<TableRow><TableCell>No donations at this time</TableCell></TableRow>)}
+            ))}
           </TableBody>
         </Table>
       </TableContainer>
@@ -185,7 +192,7 @@ export default function DistributorDash({user}) {
         The chart below shows all donations successfully completed by {user?.organization} so far.
       </Typography>
       <div style={{ marginTop: '20px' }}>
-        <AreaChart width={1000} height={400} data={completedDonations} margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
+        <AreaChart width={mobile ? 380 : 1000} height={400} data={completedDonations} margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="from_date" name='Time' />
           <YAxis dataKey="value" name='Value' />

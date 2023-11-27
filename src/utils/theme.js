@@ -13,8 +13,14 @@ export const theme = createTheme({
     home: {
       main: '#AED6F1'
     },
-    edit: {
+    purple: {
       main: '#D7BDE2'
+    },
+    pending: {
+      main: '#FFFFE6'
+    },
+    accepted: {
+      main: '#E0F3DB'
     },
     gray: {
       main: '#CECECE'

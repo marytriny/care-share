@@ -33,7 +33,7 @@ function App() {
             <Typography variant='h4' sx={{pt: '4px', fontFamily: 'Gabriola'}}> CareShare </Typography>
             <img width="16" height="16" src="https://img.icons8.com/ultraviolet/40/like--v1.png" alt=''/>
             <Button href={APP_ROUTE.HOME} color='home' variant='contained' sx={{mx: '5px'}}> Home </Button>
-            { authenticated && <Button href={APP_ROUTE.DASH} color='edit' variant='contained'> Dashboard </Button>}
+            { authenticated && <Button href={APP_ROUTE.DASH} color='purple' variant='contained'> Dashboard </Button>}
           </div>
           <div align='right'>
             <AccountButton/>
