@@ -5,18 +5,20 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { CartesianGrid, Tooltip, XAxis, YAxis, AreaChart, Area } from 'recharts'
 import { Paper, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, IconButton, 
-  CardActionArea, CardContent, CardMedia, Button } from '@mui/material';
+  CardActionArea, CardContent, CardMedia, Button, Dialog } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import UndoIcon from '@mui/icons-material/Undo';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import usZips from 'us-zips'
+import moment from 'moment';
 
 // Local imports
 import { API_ROUTE, APP_ROUTE } from '../utils/constants';
 import { printRow, generateReport } from '../utils/common';
 import OrgDetailsDialog from '../components/OrgDetailsDialog';
 import Map from './Map';
+import DonorForm from '../components/DonorForm'
 
 // Donation table columns
 const columns = [ 'item', 'quantity', 'value', 'from_date', 'to_date', 'distributor', 'status' ];
@@ -36,6 +38,9 @@ export default function DonorDash({user}) {
   const [rows, setRows] = useState([])
   const [showMoreDialog, setShowMoreDialog] = useState(false)
   const [selectedOrg, setSelectedOrg] = useState(null)
+  const [updateDialog, setUpdateDialog] = useState(false)
+  const [selectedDonation, setSelectedDonation] = useState(null)
+
   const [donationsOverTime, setDonationsOverTime] = useState([])
   const [allDistributors, setallDistributors] = useState([])
   const [location, setLocation] = useState([28.032879, -80.81605])
@@ -87,6 +92,27 @@ export default function DonorDash({user}) {
     })
   }
 
+  const onRowClink = donation => {
+    donation['from_date'] = moment(donation.from_date).format('YYYY-MM-DD HH:mm')
+    donation['to_date'] = moment(donation.to_date).format('YYYY-MM-DD HH:mm')
+    console.log(donation) // rmv
+    setSelectedDonation(donation)
+    setUpdateDialog(true)
+  }
+
+  const updateDonation = () => axios.put(API_ROUTE.DONATION, selectedDonation) 
+    .then((rsp) => {
+      toast.success("Donation updated!");
+      loadTable();
+      setUpdateDialog(false);
+    })
+    .catch ((err) => {
+      toast.error("Failed to update donation. Try again later.");
+      console.log('Failed to update donation: ', err);
+      loadTable();
+      setUpdateDialog(false);
+    });
+
   const rowColor = status => {
     switch (status) {
       case 'PENDING': return theme.palette.pending.main;
@@ -102,7 +128,8 @@ export default function DonorDash({user}) {
 
   // Display the table 
   const PrintTable = () => {
-    return (
+    if (rows.length < 1) return (<Typography align='left'>No donations yet.</Typography>)
+    else return (
       <TableContainer component={Paper} sx={{ maxHeight: "200px", width: '1000px' }}>
         <Table stickyHeader size='small'>
           <TableHead>
@@ -112,8 +139,8 @@ export default function DonorDash({user}) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.length > 0 ? rows.map((rowData) => (
-              <TableRow key={rowData.id} hover sx={{ backgroundColor: rowColor(rowData.status) }}>
+            { rows.map( rowData => (
+              <TableRow key={rowData.id} hover onClick={() => onRowClink(rowData)} sx={{ backgroundColor: rowColor(rowData.status) }}>
                 {columns.map(x => printRow(x, rowData, showMore))} 
                 <TableCell key='cancel'> 
                   { rowData.status === 'PENDING' &&
@@ -128,7 +155,7 @@ export default function DonorDash({user}) {
                   }
                 </TableCell>
               </TableRow>
-            )) : (<TableRow><TableCell>No donations yet</TableCell></TableRow>)}
+            ))}
           </TableBody>
         </Table>
       </TableContainer>
@@ -181,8 +208,11 @@ export default function DonorDash({user}) {
         <Map center={location} zoom={10} markers={allDistributors} usePin />
       </div>
 
-      {/* Dialog */}
-      <OrgDetailsDialog org={selectedOrg} showMoreDialog={showMoreDialog} setShowMoreDialog={setShowMoreDialog} />
+      {/* Dialogs */}
+      <OrgDetailsDialog open={showMoreDialog} setOpen={setShowMoreDialog} org={selectedOrg} />   
+      <Dialog open={updateDialog} onClose={() => setUpdateDialog(false)}>
+        <DonorForm donation={selectedDonation} setDonation={setSelectedDonation} submit={updateDonation}/>
+      </Dialog>
     </div>
   );
 }

@@ -2,11 +2,11 @@
 import React from 'react';
 import { Dialog, DialogContent, DialogTitle } from '@mui/material';
 
-export default function OrgDetailsDialog({org, showMoreDialog, setShowMoreDialog}) {
+export default function OrgDetailsDialog({org, open, setOpen}) {
   
   if (!org) return null;
   else return(
-    <Dialog open={showMoreDialog} onClose={() => setShowMoreDialog(false)}>
+    <Dialog open={open} onClose={() => setOpen(false)}>
       <DialogTitle align='center'> Details </DialogTitle>
       <DialogContent> 
         { org.role === 'DONOR' && 
