@@ -17,19 +17,20 @@
 /* Home Page Styling*/
 .weekly-award {
   display: flex; 
-  margin: 40px 0 80px;
+  margin-bottom: 80px;
   justify-content: space-around;
 }
 
 .weekly-award-card {
   display: flex;
   align-items: flex-end;
+  margin-top: 40px;
 }
 
 .weekly-award-text {
   text-align: left;
   margin-right: 10px;
-  max-width: 370px
+  max-width: 400px
 }
 
 .about-us {

@@ -95,7 +95,6 @@ export default function DonorDash({user}) {
   const onRowClink = donation => {
     donation['from_date'] = moment(donation.from_date).format('YYYY-MM-DD HH:mm')
     donation['to_date'] = moment(donation.to_date).format('YYYY-MM-DD HH:mm')
-    console.log(donation) // rmv
     setSelectedDonation(donation)
     setUpdateDialog(true)
   }
